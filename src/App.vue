@@ -21,9 +21,13 @@ export default {
 </script>
 
 <template>
-  <Header :menu="store.menuItems"/>
-  <router-view></router-view>
-  <Footer />
+  <div>
+    <Navbar />
+    <main>
+      <slot></slot>
+    </main>
+    <Footer />
+  </div>
 </template>
 
 <style lang="scss">
