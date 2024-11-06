@@ -1,42 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 
-import Home from './components/pages/Home.vue';
-import ListRestaurant from './components/pages/ListRestaurant.vue';
-import ShowSingleCar from './components/pages/ShowSingleCar.vue';
-import CarNotFound from './components/pages/CarNotFound.vue';
+// Importa le tue pagine
+import HomePage from "./components/pages/HomePage.vue";
+import MenuPage from "./components/pages/MenuPage.vue";
+import CartPage from "./components/pages/CartPage.vue";
+
+const routes = [
+  {
+    path: "/",
+    name: "Home",
+    component: HomePage,
+  },
+  {
+    path: "/menu/:restaurantId",
+    name: "Menu",
+    component: MenuPage,
+    props: true, // Per passare l'ID del ristorante come prop
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: CartPage,
+  },
+];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {
-            path: '/',
-            name: 'home',
+  history: createWebHistory(),
+  routes,
+});
 
-            component:
-                Home,
-        },
-        {
-            path: '/list_car',
-            name: 'list_car',
-
-            component:
-                ListCar,
-        },
-        {
-            path: '/list_car/:slug',
-            name: 'show_car',
-
-            component:
-                ShowSingleCar,
-        },
-        {
-            path: '/list_car/:pathMatch(.*)*',
-            name: 'not_found',
-
-            component:
-                CarNotFound,
-        },
-    ]
-})
-
-export { router };
+export default router;
