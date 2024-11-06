@@ -1,23 +1,32 @@
 <script>
+import Header from './components/layouts/Header.vue';
+import Footer from './components/layouts/Footer.vue';
+import { store } from './store';
+
+
 export default {
-  
+
+  components: {
+    Header,
+    Footer
+  },
+
+  data() {
+    return {
+      store,
+    }
+  },
+
 }
 </script>
 
 <template>
-  <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <h1 class="text-center text-primary"> DELIVEBOO</h1>
-        </div>
-        <div class="col-12">
-        </div>
-      </div>    
-  </div>
+  <Header :menu="store.menuItems"/>
+  <router-view></router-view>
+  <Footer />
 </template>
 
-
 <style lang="scss">
-@import './styles/general.scss'
-  
+@import './styles/general.scss';
 </style>
+
