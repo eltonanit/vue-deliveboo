@@ -19,6 +19,9 @@
 
     <!-- Lista dei ristoranti -->
     <div class="row g-0">
+      <div class="mb-4 text-center">
+        <input type="text" v-model="searchTerm" placeholder="Nome ristorante">
+      </div>
       <div
         v-for="restaurant in filteredRestaurants"
         :key="restaurant.id"
@@ -66,21 +69,29 @@ export default {
         "Tailandese",
         "Mediterraneo",
       ],
+      searchTerm: '',
     };
   },
   computed: {
     filteredRestaurants() {
-      if (this.selectedTypes.length === 0) {
-        return this.restaurants;
-      }
+    if (this.selectedTypes.length === 0 && this.searchTerm === '') {
+      return this.restaurants;
+    } else if (this.selectedTypes.length > 0) {
+      // Filtra il tipo
       return this.restaurants.filter((restaurant) => {
-        // Controlla se almeno una tipologia del ristorante è selezionata
         return restaurant.types.some((type) =>
           this.selectedTypes.includes(type.name)
         );
       });
-    },
+    } else {
+      // Filtra il nome del ristorante
+      return this.restaurants.filter((restaurant) => {
+        const searchTerm = this.searchTerm.toLowerCase();
+        return restaurant.name.toLowerCase().includes(searchTerm);
+      });
+    }
   },
+},
   mounted() {
     // Recupera tutti i ristoranti inizialmente
     axios
