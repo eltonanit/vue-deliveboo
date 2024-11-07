@@ -1,55 +1,51 @@
-<template>
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-left">
-        <p>&copy; 2024 Deliveboo - All rights reserved.</p>
-      </div>
-      <div class="footer-links">
-        <ul>
-          <li><a href="/about">Chi Siamo</a></li>
-          <li><a href="/privacy-policy">Privacy Policy</a></li>
-          <li><a href="/contact">Contatti</a></li>
-        </ul>
-      </div>
-      <div class="footer-socials">
-        <a
-          href="https://www.facebook.com/deliveboo"
-          target="_blank"
-          class="social-icon"
-          ><i class="fab fa-facebook-f"></i
-        ></a>
-        <a
-          href="https://www.instagram.com/deliveboo"
-          target="_blank"
-          class="social-icon"
-          ><i class="fab fa-instagram"></i
-        ></a>
-        <a
-          href="https://twitter.com/deliveboo"
-          target="_blank"
-          class="social-icon"
-          ><i class="fab fa-twitter"></i
-        ></a>
-      </div>
-    </div>
-  </footer>
-</template>
-
 <script>
 export default {
   name: "Footer",
 };
 </script>
 
+<template>
+  <div class="container p-5">
+    <div class="row">
+      <div class="col-12 pt-5">
+        <div class="footer-content">
+          <div class="footer-left pt-5">
+            <p>&copy; 2024 Deliveboo - All rights reserved.</p>
+          </div>
+          <div class="footer-links pt-5">
+            <ul>
+              <li><a href="/about">Chi Siamo</a></li>
+              <li><a href="/privacy-policy">Privacy Policy</a></li>
+              <li><a href="/contact">Contatti</a></li>
+            </ul>
+          </div>
+          <div class="pt-5">
+            <h5 class="text-white mb-3">Social</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="https://www.facebook.com/deliveboo" target="_blank" class="social-icon">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/deliveboo" target="_blank" class="social-icon">
+                  <i class="fab fa-instagram"></i>
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/deliveboo" target="_blank" class="social-icon">
+                  <i class="fab fa-twitter"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.footer {
-  color: #fff;
-  padding: 20px 0;
-  text-align: center;
-  position: relative;
-  bottom: 0;
-  width: 100%;
-}
 
 .footer-content {
   display: flex;
@@ -80,11 +76,6 @@ export default {
 
 .footer-links a:hover {
   color: #ffd700; /* colore dorato per hover */
-}
-
-.footer-socials {
-  display: flex;
-  gap: 15px;
 }
 
 .social-icon {

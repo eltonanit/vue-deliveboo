@@ -1,57 +1,3 @@
-<template>
-  <div class="page-container">
-    <!-- Filtro con icone -->
-    <div class="mb-4 mt-4">
-      <h4 class="text-white text-center mb-3">Filtra per tipologia</h4>
-      <div class="d-flex justify-content-center">
-        <div class="bg-icon"
-          v-for="type in types"
-          :key="type"
-          :class="['icon-container', { active: selectedTypes.includes(type) }]"
-          @click="toggleType(type)"
-          :style="getIconStyle(type)"
-        >
-          <i :class="getIconClass(type)"></i>
-          <p class="text-white mt-2">{{ type }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="text-center text-white"><h4>Filtra per Ristorante</h4></div>
-    <div class="input-group mb-5">
-      <input type="text" id="searchbar" v-model="searchTerm" placeholder="Nome ristorante">
-      <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
-    </div>
-
-    <!-- Lista dei ristoranti -->
-    <div class="row g-0">
-      
-      <div
-        v-for="restaurant in filteredRestaurants"
-        :key="restaurant.id"
-        class="col-12 col-md-4 mb-4 d-flex justify-content-center"
-      >
-        <div class="card card-custom w-75 shadow-sm">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Restaurant image"
-            class="card-img-top img-fluid"
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{ restaurant.name }}</h5>
-            <p class="card-text">Indirizzo: {{ restaurant.address }}</p>
-            <p class="card-text">Telefono: {{ restaurant.phone }}</p>
-            <router-link
-              :to="`/restaurant/${restaurant.id}`"
-              class="btn btn-primary"
-              >Vedi Piatti</router-link
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 
@@ -73,28 +19,29 @@ export default {
         "Mediterraneo",
       ],
       searchTerm: '',
+      types_visible: false,
     };
   },
   computed: {
     filteredRestaurants() {
-    if (this.selectedTypes.length === 0 && this.searchTerm === '') {
-      return this.restaurants;
-    } else if (this.selectedTypes.length > 0) {
-      // Filtra il tipo
-      return this.restaurants.filter((restaurant) => {
-        return restaurant.types.some((type) =>
-          this.selectedTypes.includes(type.name)
-        );
-      });
-    } else {
-      // Filtra il nome del ristorante
-      return this.restaurants.filter((restaurant) => {
-        const searchTerm = this.searchTerm.toLowerCase();
-        return restaurant.name.toLowerCase().includes(searchTerm);
-      });
-    }
+      if (this.selectedTypes.length === 0 && this.searchTerm === '') {
+        return this.restaurants;
+      } else if (this.selectedTypes.length > 0) {
+        // Filtra il tipo
+        return this.restaurants.filter((restaurant) => {
+          return restaurant.types.some((type) =>
+            this.selectedTypes.includes(type.name)
+          );
+        });
+      } else {
+        // Filtra il nome del ristorante
+        return this.restaurants.filter((restaurant) => {
+          const searchTerm = this.searchTerm.toLowerCase();
+          return restaurant.name.toLowerCase().includes(searchTerm);
+        });
+      }
+    },
   },
-},
   mounted() {
     // Recupera tutti i ristoranti inizialmente
     axios
@@ -105,7 +52,8 @@ export default {
       })
       .catch((error) => {
         console.error("Error fetching restaurants:", error);
-      });
+      }
+    );
   },
   methods: {
     toggleType(type) {
@@ -117,16 +65,16 @@ export default {
     },
     getIconClass(type) {
       const icons = {
-        Italiano: "fas fa-pizza-slice fa-3x",
-        Giapponese: "fas fa-fish fa-3x",
-        Messicano: "fas fa-pepper-hot fa-3x",
-        Indiano: "fas fa-drumstick-bite fa-3x",
-        Vegetariano: "fas fa-leaf fa-3x",
-        Americano: "fas fa-hamburger fa-3x",
-        Cinese: "fas fa-cloud-meatball fa-3x",
-        Francese: "fas fa-bread-slice fa-3x",
-        Tailandese: "fas fa-utensils fa-3x",
-        Mediterraneo: "fas fa-sun fa-3x",
+        Italiano: "fas fa-pizza-slice fa-sm",
+        Giapponese: "fas fa-fish fa-sm",
+        Messicano: "fas fa-pepper-hot fa-sm",
+        Indiano: "fas fa-drumstick-bite fa-sm",
+        Vegetariano: "fas fa-leaf fa-sm",
+        Americano: "fas fa-hamburger fa-sm",
+        Cinese: "fas fa-cloud-meatball fa-sm",
+        Francese: "fas fa-bread-slice fa-sm",
+        Tailandese: "fas fa-utensils fa-sm",
+        Mediterraneo: "fas fa-sun fa-sm",
       };
       return icons[type];
     },
@@ -145,17 +93,85 @@ export default {
       };
       return colors[type];
     },
+    visibleTypes() {
+      this.types_visible = !this.types_visible;
+    }
   },
 };
 </script>
 
+<template>
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-12 mb-5 col-lg-2 text-white">
+        <h5 class="mb-3">Filtra Ristoranti</h5>
+          <div class="mb-4">
+            <div class="input-group">
+              <input class="form-control" type="text" v-model="searchTerm" placeholder="Nome ristorante">
+              <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between cursor_pointer" @click="visibleTypes()">
+            <h6>Tipologia</h6>
+            <i :class="['ms-3', {'fa-solid fa-chevron-up' : types_visible, 'fa-solid fa-chevron-down': !types_visible}]"></i>
+          </div>
+          <!-- Filtro con icone -->
+          <div id="my_types_container" :class="{ 'd-none' : !types_visible, 'd-block' : types_visible }">
+            <div id="single_type" class="d-flex align-items-center m-0 w- mb-2" v-for="type in types" :key="type" :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)" :style="getIconStyle(type)">
+              <i class="ms-4" :class="getIconClass(type)"></i>
+              <p class="text-white m-0">{{ type }}</p>
+            </div>
+          </div>
+          <div>
+            <h6>Prova</h6>
+          </div>
+
+      </div>
+      <div class="col-12 col-lg-10">
+        <!-- Lista dei ristoranti -->
+        <div class="row g-0">
+          <div v-for="restaurant in filteredRestaurants" :key="restaurant.id" class="col-12 col-md-4 mb-4 d-flex justify-content-center">
+            <div class="card card-custom w-75 shadow-sm">
+              <img
+                src="https://via.placeholder.com/150"
+                alt="Restaurant image"
+                class="card-img-top img-fluid"/>
+              <div class="card-body">
+                <h5 class="card-title">{{ restaurant.name }}</h5>
+                <p class="card-text">{{ restaurant.types.map(type => type.name).join(", ") }}</p>
+                <p class="card-text">Indirizzo: {{ restaurant.address }}</p>
+                <p class="card-text">Telefono: {{ restaurant.phone }}</p>
+                <!-- <router-link
+                  :to="`/restaurant/${restaurant.id}`"
+                  class="btn btn-primary">Vedi Piatti
+                </router-link> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
+
+#my_types_container {
+  cursor: pointer;
+  #single_type {
+    background-color: rgba(255, 255, 255, 0.233);
+    border-radius: 15px;
+  }
+}
+
+.cursor_pointer {
+  cursor: pointer;
+}
+
 .icon-container {
-  text-align: center;
   margin-right: 20px;
   cursor: pointer;
   transition: transform 0.3s ease;
-
 }
 .icon-container:hover {
   transform: scale(1.1);
@@ -190,11 +206,6 @@ export default {
 
 .card-custom .card-text {
   font-size: 0.9rem; /* Riduce la dimensione del testo */
-}
-#searchbar{
-  width: 870px;
-  margin-left: 255px;
-  height: 35px;
 }
 
 </style>

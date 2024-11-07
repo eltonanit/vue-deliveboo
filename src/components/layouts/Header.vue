@@ -1,32 +1,28 @@
-<template>
-    <div class="container-fluid">
-        <header class="d-flex justify-content-center header">
-           <div class="logo"><span class="logo">Delive</span><span class="boo">Boo</span></div>
-            <nav>
-              
-            </nav>       
-        </header> 
-    </div>
-  
-</template>
-
 <script>
 export default {
   name: "Header",
 };
 </script>
 
+<template>
+
+  <div class="container header">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="logo">
+          <span class="logo">Delive</span><span class="boo">Boo</span>
+        </div>
+        <p class="m-0 text-white">Qui andrà un menù</p>
+      </div>
+    </div>
+  </div>
+  
+</template>
+
 <style scoped>
 .header {
   background: #4D148C;
   padding: 15px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  height: 90px;
-  z-index: 1;
-  width: 100%;
 }
 
 .logo-container {
@@ -39,7 +35,6 @@ export default {
   font-size: 3rem;
   font-weight: bold;
   color: white;
-  transition: transform 0.3s ease-in-out;
 }
 
 .boo {
