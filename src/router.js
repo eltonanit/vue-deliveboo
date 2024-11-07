@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-// Importa le tue pagine
 import HomePage from "./components/pages/HomePage.vue";
 import MenuPage from "./components/pages/MenuPage.vue";
 import CartPage from "./components/pages/CartPage.vue";

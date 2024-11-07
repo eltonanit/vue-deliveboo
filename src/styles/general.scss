@@ -1,32 +1,7 @@
-@import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-.container-fluid {
-    background-color: #f5f5f5;
-}
-
-.btn-orange {
-    background-color: #ff6600;
-    color: #fff;
-}
-
-.logo {
-    width: 100px;
-}
-
-.promo {
-    text-align: center;
-    color: #ff6600;
-}
-
-.promo h2 {
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-top: 20px;
-}
-
