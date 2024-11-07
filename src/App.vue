@@ -22,7 +22,7 @@ export default {
 
 <template>
   <div>
-    <Navbar />
+    <Header />
     <main>
       <slot></slot>
     </main>
