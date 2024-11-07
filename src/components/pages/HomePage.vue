@@ -62,12 +62,12 @@ export default {
       selectedTypes: [], // Array per le tipologie selezionate
       types: [
         "Italiano",
-        "Cinese",
         "Giapponese",
         "Messicano",
         "Indiano",
         "Vegetariano",
         "Americano",
+        "Cinese",
         "Francese",
         "Tailandese",
         "Mediterraneo",
@@ -118,12 +118,12 @@ export default {
     getIconClass(type) {
       const icons = {
         Italiano: "fas fa-pizza-slice fa-3x",
-        Cinese: "fas fa-cloud-meatball fa-3x",
         Giapponese: "fas fa-fish fa-3x",
         Messicano: "fas fa-pepper-hot fa-3x",
         Indiano: "fas fa-drumstick-bite fa-3x",
         Vegetariano: "fas fa-leaf fa-3x",
         Americano: "fas fa-hamburger fa-3x",
+        Cinese: "fas fa-cloud-meatball fa-3x",
         Francese: "fas fa-bread-slice fa-3x",
         Tailandese: "fas fa-utensils fa-3x",
         Mediterraneo: "fas fa-sun fa-3x",
@@ -132,16 +132,16 @@ export default {
     },
     getIconStyle(type) {
       const colors = {
-        Italiano: "color: #d32f2f;",
+        Italiano: "color: #D08100",
         Cinese: "color: #e64a19;",
-        Giapponese: "color: #3f51b5;",
-        Messicano: "color: #ff5722;",
+        Giapponese: "color: #0080D0;",
+        Messicano: "color: #D00100;",
         Indiano: "color: #ff9800;",
         Vegetariano: "color: #4caf50;",
-        Americano: "color: #795548;",
+        Americano: "color: #CC6400;",
         Francese: "color: #fbc02d;",
-        Tailandese: "color: purple;",
-        Mediterraneo: "color: #ffeb3b;",
+        Tailandese: "color: #A6A6A6;",
+        Mediterraneo: "color: #E3BB01;",
       };
       return colors[type];
     },
@@ -196,10 +196,5 @@ export default {
   margin-left: 255px;
   height: 35px;
 }
-.bg-icon{
-  width: 100px;
-  height: 60px;
-  background-color: black;
-  border-radius: 50%;
-}
+
 </style>

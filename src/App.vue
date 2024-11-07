@@ -38,7 +38,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: rgba(255,128,1,1);
+  background: rgb(77,20,140);
+  background: linear-gradient(180deg, rgba(77,20,140,1) 48%, rgba(255,128,0,1) 100%); 
 }
 
 .main-content {
