@@ -39,7 +39,7 @@ export default {
   flex-direction: column;
   height: 100vh;
   background: rgb(77,3,112);
-background: linear-gradient(180deg, rgba(77,3,112,1) 68%, rgba(255,128,1,1) 100%);
+  background: linear-gradient(180deg, rgba(77,3,112,1) 63%, rgba(255,128,1,1) 100%);
 }
 
 .main-content {
