@@ -4,7 +4,7 @@
     <div class="mb-4 mt-4">
       <h4 class="text-white text-center mb-3">Filtra per tipologia</h4>
       <div class="d-flex justify-content-center">
-        <div
+        <div class="bg-icon"
           v-for="type in types"
           :key="type"
           :class="['icon-container', { active: selectedTypes.includes(type) }]"
@@ -12,11 +12,11 @@
           :style="getIconStyle(type)"
         >
           <i :class="getIconClass(type)"></i>
-          <p class="text-white">{{ type }}</p>
+          <p class="text-white mt-2">{{ type }}</p>
         </div>
       </div>
     </div>
-    <div class="text-center text-white"><h4>Filtra per Ristorante</h4></div>
+    <div class="text-center text-white mt-5"><h4>Filtra per Ristorante</h4></div>
     <div class="input-group mb-5">
       <input type="text" id="searchbar" v-model="searchTerm" placeholder="Nome ristorante">
       <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -194,7 +194,12 @@ export default {
 #searchbar{
   width: 870px;
   margin-left: 255px;
-  height: 40px;
+  height: 35px;
 }
-
+.bg-icon{
+  width: 100px;
+  height: 60px;
+  background-color: black;
+  border-radius: 50%;
+}
 </style>

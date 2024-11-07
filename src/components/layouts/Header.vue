@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 .header {
-  background: white;
+  background: #4D148C;
   padding: 15px 0;
   display: flex;
   justify-content: center;
@@ -35,11 +35,11 @@ export default {
 .logo {
   font-size: 3rem;
   font-weight: bold;
-  color: rgba(255,128,1,1);
+  color: white;
   transition: transform 0.3s ease-in-out;
 }
 
 .boo {
-  color: rgba(77,3,112,1);
+  color: rgba(255,128,1,1);
 }
 </style>
