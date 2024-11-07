@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="logo-container">
-      <span class="logo">Delive<span class="boo">boo</span></span>
+      <span class="logo">Delivboo</span>
     </div>
   </header>
 </template>
@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 .header {
-  background: rgb(44, 5, 5);
+  background: #FF8001;
   padding: 15px 0;
   display: flex;
   justify-content: center;
@@ -35,7 +35,7 @@ export default {
 .logo {
   font-size: 3rem;
   font-weight: bold;
-  color: gold;
+  color: white;
   transition: transform 0.3s ease-in-out;
 }
 

@@ -16,12 +16,15 @@
         </div>
       </div>
     </div>
+    <div class="text-center text-white"><h4>Filtra per Ristorante</h4></div>
+    <div class="input-group mb-5">
+      <input type="text" id="searchbar" v-model="searchTerm" placeholder="Nome ristorante">
+      <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
+    </div>
 
     <!-- Lista dei ristoranti -->
     <div class="row g-0">
-      <div class="mb-4 text-center">
-        <input type="text" v-model="searchTerm" placeholder="Nome ristorante">
-      </div>
+      
       <div
         v-for="restaurant in filteredRestaurants"
         :key="restaurant.id"
@@ -152,6 +155,7 @@ export default {
   margin-right: 20px;
   cursor: pointer;
   transition: transform 0.3s ease;
+
 }
 .icon-container:hover {
   transform: scale(1.1);
@@ -187,4 +191,10 @@ export default {
 .card-custom .card-text {
   font-size: 0.9rem; /* Riduce la dimensione del testo */
 }
+#searchbar{
+  width: 870px;
+  margin-left: 255px;
+  height: 40px;
+}
+
 </style>
