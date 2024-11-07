@@ -19,7 +19,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  
   position: fixed;
   height: 90px;
   z-index: 1;

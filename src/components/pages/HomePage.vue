@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <div class="text-center text-white mt-5"><h4>Filtra per Ristorante</h4></div>
+    <div class="text-center text-white"><h4>Filtra per Ristorante</h4></div>
     <div class="input-group mb-5">
       <input type="text" id="searchbar" v-model="searchTerm" placeholder="Nome ristorante">
       <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
