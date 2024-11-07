@@ -21,10 +21,17 @@ export default {
 </script>
 
 <template>
+<<<<<<< HEAD
+  <div>
+    <Header />
+    <main>
+      <slot></slot>
+=======
   <div id="app">
     <Header />
     <main class="main-content">
       <HomePage />
+>>>>>>> 90b4a1f2cce4c605012aed780bc53e386a933826
     </main>
     <Footer />
   </div>
