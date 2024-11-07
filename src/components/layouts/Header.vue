@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <div class="container-fluid">
         <header class="d-flex justify-content-between align-items-center p-3 bg-light">
             <h1 class="text-primary">DELIVEBOO</h1>
@@ -12,13 +11,8 @@
                 </ul>
             </nav>       
         </header> 
-=======
-  <header class="header">
-    <div class="logo-container">
-      <span class="logo">Delive<span class="boo">Boo</span></span>
->>>>>>> 90b4a1f2cce4c605012aed780bc53e386a933826
     </div>
-  </header>
+  
 </template>
 
 <script>
