@@ -73,9 +73,12 @@ export default {
       if (this.selectedTypes.length === 0) {
         return this.restaurants;
       }
-      return this.restaurants.filter((restaurant) =>
-        this.selectedTypes.includes(restaurant.type)
-      );
+      return this.restaurants.filter((restaurant) => {
+        // Controlla se almeno una tipologia del ristorante è selezionata
+        return restaurant.types.some((type) =>
+          this.selectedTypes.includes(type.name)
+        );
+      });
     },
   },
   mounted() {
