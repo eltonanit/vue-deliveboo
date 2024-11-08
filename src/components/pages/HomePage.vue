@@ -48,12 +48,13 @@ export default {
       .get("http://localhost:8000/api/restaurants")
       .then((response) => {
         this.restaurants = response.data;
-        this.filteredRestaurants = this.restaurants; // All'inizio tutti i ristoranti sono visibili
+        // this.filteredRestaurants = this.restaurants; // All'inizio tutti i ristoranti sono visibili
       })
       .catch((error) => {
         console.error("Error fetching restaurants:", error);
       }
     );
+    this.types.sort();
   },
   methods: {
     toggleType(type) {
@@ -78,18 +79,18 @@ export default {
       };
       return icons[type];
     },
-    getIconStyle(type) {
+    getIconColor(type) {
       const colors = {
-        Italiano: "color: #D08100",
-        Cinese: "color: #e64a19;",
-        Giapponese: "color: #0080D0;",
-        Messicano: "color: #D00100;",
-        Indiano: "color: #ff9800;",
-        Vegetariano: "color: #4caf50;",
-        Americano: "color: #CC6400;",
-        Francese: "color: #fbc02d;",
-        Tailandese: "color: #A6A6A6;",
-        Mediterraneo: "color: #E3BB01;",
+        Italiano: "#D08100",
+        Cinese: "#e64a19",
+        Giapponese: "#0080D0",
+        Messicano: "#D00100",
+        Indiano: "#ff9800",
+        Vegetariano: "#4caf50",
+        Americano: "#CC6400",
+        Francese: "#fbc02d",
+        Tailandese: "#A6A6A6",
+        Mediterraneo: "#E3BB01",
       };
       return colors[type];
     },
@@ -103,23 +104,22 @@ export default {
 <template>
   <div class="container py-5">
     <div class="row">
-      <div class="col-12 mb-5 col-lg-2 text-white">
+      <div class="col-12 mb-5 col-lg-3 text-white">
         <h5 class="mb-3">Filtra Ristoranti</h5>
-          <div class="mb-4">
-            <div class="input-group">
-              <input class="form-control" type="text" v-model="searchTerm" placeholder="Nome ristorante">
-              <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
-            </div>
+          <div class="input-group mb-4">
+            <input class="form-control" type="text" v-model="searchTerm" placeholder="Nome ristorante">
+            <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
           </div>
-          <div class="d-flex justify-content-between cursor_pointer" @click="visibleTypes()">
+          <div class="d-flex justify-content-between" @click="visibleTypes()">
             <h6>Tipologia</h6>
-            <i :class="['ms-3', {'fa-solid fa-chevron-up' : types_visible, 'fa-solid fa-chevron-down': !types_visible}]"></i>
+            <i class="ms-3"></i>
           </div>
           <!-- Filtro con icone -->
-          <div id="my_types_container" :class="{ 'd-none' : !types_visible, 'd-block' : types_visible }">
-            <div id="single_type" class="d-flex align-items-center m-0 w- mb-2" v-for="type in types" :key="type" :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)" :style="getIconStyle(type)">
-              <i class="ms-4" :class="getIconClass(type)"></i>
+          <div id="my_types_container" class="d-flex flex-wrap">
+            <div id="single_type" class="d-flex align-items-center m-0 mb-2 p-1 me-1" v-for="type in types" :key="type" :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)" :style="{ color: getIconColor(type) }">
+              <i class="me-1" :class="getIconClass(type)"></i>
               <p class="text-white m-0">{{ type }}</p>
+              <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }" >Check</p>
             </div>
           </div>
           <div>
@@ -127,7 +127,7 @@ export default {
           </div>
 
       </div>
-      <div class="col-12 col-lg-10">
+      <div class="col-12 col-lg-9">
         <!-- Lista dei ristoranti -->
         <div class="row g-0">
           <div v-for="restaurant in filteredRestaurants" :key="restaurant.id" class="col-12 col-md-4 mb-4 d-flex justify-content-center">
@@ -140,7 +140,8 @@ export default {
                 <h5 class="card-title">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.types.map(type => type.name).join(", ") }}</p>
                 <p class="card-text">Indirizzo: {{ restaurant.address }}</p>
-                <p class="card-text">Telefono: {{ restaurant.phone }}</p>
+                <span class="d-lg-none">Telefono: <a class="text-dark" href="tel:{{ restaurant.phone }}">{{ restaurant.phone }}</a></span>
+                <p class="card-text d-none d-lg-block">Telefono: {{ restaurant.phone }}</p>
                 <!-- <router-link
                   :to="`/restaurant/${restaurant.id}`"
                   class="btn btn-primary">Vedi Piatti
@@ -159,7 +160,7 @@ export default {
 #my_types_container {
   cursor: pointer;
   #single_type {
-    background-color: rgba(255, 255, 255, 0.233);
+    /* background-color: rgba(255, 255, 255, 0.233); */
     border-radius: 15px;
   }
 }

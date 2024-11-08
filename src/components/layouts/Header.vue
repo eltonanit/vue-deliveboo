@@ -22,7 +22,6 @@ export default {
 <style scoped>
 .header {
   background: #4D148C;
-  padding: 15px 0;
 }
 
 .logo-container {
