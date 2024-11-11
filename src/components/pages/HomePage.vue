@@ -92,11 +92,8 @@ export default {
           <h3 v-if="error" class="text-center text_orange">{{ error }}</h3>
 
           <div v-if="!loading & !error" v-for="restaurant in filteredRestaurants" :key="restaurant.id" class="col-12 col-md-4 mb-4 d-flex justify-content-center">
-            <div class="card card-custom w-75 shadow-sm">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Restaurant image"
-                class="card-img-top img-fluid"/>
+            <div class="card border-0 card-custom w-75 shadow-sm">
+              <img src="https://picsum.photos/450/450" alt="Restaurant image" class="card-img-top img-fluid"/>
               <div class="card-body">
                 <h5 class="card-title">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.types.map(type => type.name).join(", ") }}</p>
@@ -105,7 +102,7 @@ export default {
                 <p class="card-text d-none d-lg-block">Telefono: {{ restaurant.phone }}</p>
                 <router-link
                   :to="{ name: 'Menu', params: { restaurantId: restaurant.id} }"
-                  class="btn btn-primary">Vedi Piatti
+                  class="btn btn_orange">Vedi Piatti
                 </router-link>
               </div>
             </div>
@@ -116,7 +113,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 #my_types_container {
   cursor: pointer;
@@ -128,6 +125,14 @@ export default {
 
 .text_orange {
   color: rgba(255,128,1,1);
+}
+
+.btn_orange {
+  background-color: rgba(255,128,1,1);
+  color: white;
+  &:hover {
+  background: rgb(77,20,140);
+  }
 }
 
 .cursor_pointer {
