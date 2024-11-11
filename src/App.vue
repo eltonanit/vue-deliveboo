@@ -22,12 +22,15 @@ export default {
 
 <template>
   <div id="app">
-    <Header />
+    <header>
+      <Header />
+    </header>
     <main>
-      <HomePage />
-
+      <router-view></router-view>
     </main>
-    <Footer />
+    <footer>
+      <Footer />
+    </footer>
   </div>
 </template>
 
@@ -38,5 +41,14 @@ export default {
 #app {
   background: rgb(77,20,140);
   background: linear-gradient(180deg, rgba(77,20,140,1) 48%, rgba(255,128,0,1) 100%);
+
+  header {
+    border-bottom: 1px solid rgba(255,128,1,1);
+  }
+
+  footer {
+    background-color: black;
+    color: white;
+  }
 }
 </style>

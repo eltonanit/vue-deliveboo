@@ -9,7 +9,7 @@ export default {
     <div class="row">
       <div class="col-12 pt-5">
         <div class="footer-content">
-          <div class="footer-left pt-5">
+          <div class="footer-left pt-5 text_orange">
             <p>&copy; 2024 Deliveboo - All rights reserved.</p>
           </div>
           <div class="footer-links pt-5">
@@ -86,5 +86,9 @@ export default {
 
 .social-icon:hover {
   color: #ffd700; /* colore dorato per hover */
+}
+
+.text_orange {
+  color: rgba(255,128,1,1);
 }
 </style>
