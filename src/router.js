@@ -11,7 +11,7 @@ const routes = [
     component: HomePage,
   },
   {
-    path: "/menu/:restaurantId",
+    path: "/dishes/:restaurantId",
     name: "Menu",
     component: MenuPage,
     props: true, // Per passare l'ID del ristorante come prop

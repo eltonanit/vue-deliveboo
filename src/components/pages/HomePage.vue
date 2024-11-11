@@ -1,102 +1,60 @@
 <script>
 import axios from "axios";
+import { store } from "../../store.js"
+import { toggleType, filterRestaurants, getIconClass, getIconColor } from "../../utils/helpers";
 
 export default {
   data() {
     return {
+      store,
       restaurants: [],
       selectedTypes: [], // Array per le tipologie selezionate
       types: [
-        "Italiano",
-        "Giapponese",
-        "Messicano",
-        "Indiano",
-        "Vegetariano",
-        "Americano",
-        "Cinese",
-        "Francese",
-        "Tailandese",
-        "Mediterraneo",
-      ],
+        "Italiano", "Giapponese", "Messicano", "Indiano", "Vegetariano", "Americano", "Cinese", "Francese", "Tailandese", "Mediterraneo"],
       searchTerm: '',
       types_visible: false,
+      loading: false,
+      error: null,
     };
   },
   computed: {
     filteredRestaurants() {
-      if (this.selectedTypes.length === 0 && this.searchTerm === '') {
-        return this.restaurants;
-      } else if (this.selectedTypes.length > 0) {
-        // Filtra il tipo
-        return this.restaurants.filter((restaurant) => {
-          return restaurant.types.some((type) =>
-            this.selectedTypes.includes(type.name)
-          );
-        });
-      } else {
-        // Filtra il nome del ristorante
-        return this.restaurants.filter((restaurant) => {
-          const searchTerm = this.searchTerm.toLowerCase();
-          return restaurant.name.toLowerCase().includes(searchTerm);
-        });
-      }
+      return filterRestaurants(this.restaurants, this.selectedTypes, this.searchTerm);
     },
-  },
-  mounted() {
-    // Recupera tutti i ristoranti inizialmente
-    axios
-      .get("http://localhost:8000/api/restaurants")
-      .then((response) => {
-        this.restaurants = response.data;
-        // this.filteredRestaurants = this.restaurants; // All'inizio tutti i ristoranti sono visibili
-      })
-      .catch((error) => {
-        console.error("Error fetching restaurants:", error);
-      }
-    );
-    this.types.sort();
   },
   methods: {
+    fetchRestaurants() {
+      this.loading = true;
+      this.error = null;
+
+      // Recupera tutti i ristoranti inizialmente
+      axios.get(`${store.baseUrl}/restaurants`).then((response) => {
+        if (response.data.success) {
+          this.restaurants = response.data.data;
+          // this.filteredRestaurants = this.restaurants; // All'inizio tutti i ristoranti sono visibili
+        } else {
+          this.error = "Si è verificato un errore nel recupero dei ristoranti.";
+        }
+      }).catch((error) => {
+          this.error = "Errore di connessione al server.";
+          console.error(error);
+      }).finally(() => {
+        this.loading = false;
+      });
+      this.types.sort();
+    },
     toggleType(type) {
-      if (this.selectedTypes.includes(type)) {
-        this.selectedTypes = this.selectedTypes.filter((t) => t !== type);
-      } else {
-        this.selectedTypes.push(type);
-      }
+      toggleType(this, type);
     },
-    getIconClass(type) {
-      const icons = {
-        Italiano: "fas fa-pizza-slice fa-sm",
-        Giapponese: "fas fa-fish fa-sm",
-        Messicano: "fas fa-pepper-hot fa-sm",
-        Indiano: "fas fa-drumstick-bite fa-sm",
-        Vegetariano: "fas fa-leaf fa-sm",
-        Americano: "fas fa-hamburger fa-sm",
-        Cinese: "fas fa-cloud-meatball fa-sm",
-        Francese: "fas fa-bread-slice fa-sm",
-        Tailandese: "fas fa-utensils fa-sm",
-        Mediterraneo: "fas fa-sun fa-sm",
-      };
-      return icons[type];
-    },
-    getIconColor(type) {
-      const colors = {
-        Italiano: "#D08100",
-        Cinese: "#e64a19",
-        Giapponese: "#0080D0",
-        Messicano: "#D00100",
-        Indiano: "#ff9800",
-        Vegetariano: "#4caf50",
-        Americano: "#CC6400",
-        Francese: "#fbc02d",
-        Tailandese: "#A6A6A6",
-        Mediterraneo: "#E3BB01",
-      };
-      return colors[type];
-    },
+    getIconClass,
+    getIconColor,
     visibleTypes() {
       this.types_visible = !this.types_visible;
     }
+  },
+  mounted() {
+    this.fetchRestaurants()
+
   },
 };
 </script>
@@ -130,7 +88,10 @@ export default {
       <div class="col-12 col-lg-9">
         <!-- Lista dei ristoranti -->
         <div class="row g-0">
-          <div v-for="restaurant in filteredRestaurants" :key="restaurant.id" class="col-12 col-md-4 mb-4 d-flex justify-content-center">
+          <h3 v-if="loading" class="text-center text_orange">Caricamento...</h3>
+          <h3 v-if="error" class="text-center text_orange">{{ error }}</h3>
+
+          <div v-if="!loading & !error" v-for="restaurant in filteredRestaurants" :key="restaurant.id" class="col-12 col-md-4 mb-4 d-flex justify-content-center">
             <div class="card card-custom w-75 shadow-sm">
               <img
                 src="https://via.placeholder.com/150"
@@ -142,10 +103,10 @@ export default {
                 <p class="card-text">Indirizzo: {{ restaurant.address }}</p>
                 <span class="d-lg-none">Telefono: <a class="text-dark" href="tel:{{ restaurant.phone }}">{{ restaurant.phone }}</a></span>
                 <p class="card-text d-none d-lg-block">Telefono: {{ restaurant.phone }}</p>
-                <!-- <router-link
-                  :to="`/restaurant/${restaurant.id}`"
+                <router-link
+                  :to="{ name: 'Menu', params: { restaurantId: restaurant.id} }"
                   class="btn btn-primary">Vedi Piatti
-                </router-link> -->
+                </router-link>
               </div>
             </div>
           </div>
@@ -163,6 +124,10 @@ export default {
     /* background-color: rgba(255, 255, 255, 0.233); */
     border-radius: 15px;
   }
+}
+
+.text_orange {
+  color: rgba(255,128,1,1);
 }
 
 .cursor_pointer {
