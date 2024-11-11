@@ -68,9 +68,21 @@ export default {
     this.fetchDishes(); 
   },
   computed: {
-  totalPrice() {
-    return this.cart.reduce((total, dish) => total + parseFloat(dish.price), 0);
-  }
+    restaurantName() {
+      return this.dishes[0]?.restaurant?.name || '';
+    },
+    restaurantTypes() {
+      return this.dishes[0]?.restaurant?.types || [];
+    },
+    restaurantAddress() {
+      return this.dishes[0]?.restaurant?.address || '';
+    },
+    restaurantPhone() {
+      return this.dishes[0]?.restaurant?.phone || '';
+    },
+    totalPrice() {
+      return this.cart.reduce((total, dish) => total + parseFloat(dish.price), 0);
+    },
 }
 };
 
@@ -89,14 +101,14 @@ export default {
             <div class="col-md-4">
               <img src="https://picsum.photos/420/250" class="img-fluid" alt="Restaurant image">
             </div>
-            <div class="col-md-8 text-white text-capitalize" v-for="dish in dishes" :key="dish.id">
+            <div class="col-md-8 text-white text-capitalize">
               <div class="card-body">
-                <h5 class="card-title text_orange">{{ dish.restaurant.name }}</h5>
+                <h5 class="card-title text_orange">{{ restaurantName }}</h5>
                 <ul>
-                  <li v-for="type in dish.restaurant.types" :key="type.id">{{ type.name }}</li>
+                  <li v-for="type in restaurantTypes" :key="type.id">{{ type.name }}</li>
                 </ul>
-                <p class="card-text m-0">Indirizzo: <span class="text-capitalize">{{ dish.restaurant.address }}</span></p>
-                <p class="card-text m-0">Numero: <a href="tel:{{ dish.restaurant.phone }}">{{ dish.restaurant.phone }}</a></p>
+                <p class="card-text m-0">Indirizzo: <span class="text-capitalize">{{ restaurantAddress }}</span></p>
+                <p class="card-text m-0">Numero: <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a></p>
               </div>
             </div>
           </div>
@@ -133,13 +145,13 @@ export default {
         </div>
       </div>
       <!-- Carrello -->
-      <div class="col-12 col-lg-3 text-white">
+      <div class="col-12 col-lg-3 text-white position-absolute top-15 end-0">
         <div class="card">
           <div class="card-header text-center text-uppercase">Carrello</div>
-          <ul class="list-group list-group-flush">
-            <li v-for="cartDish in cart" :key="cartDish.id" class="list-group-item">
-              - <span class="text-capitalize">{{ cartDish.name }}</span>: <span class="text-success">{{ cartDish.price }} &euro;</span>
-              <button class="btn btn-sm btn-danger ms-5" @click="removeFromCart(cartDish.id)"><i class="fas fa-trash-can"></i></button>
+          <ul class="list-group list-group-flush" style="height: 486px; overflow-y: auto;">
+            <li v-for="cartDish in cart" :key="cartDish.id" class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="flex-grow-1">{{ cartDish.name }}: <span class="text-success">{{ cartDish.price }} &euro;</span></span>
+              <button class="btn btn-sm btn-danger" @click="removeFromCart(cartDish.id)"><i class="fas fa-trash-can"></i></button>
             </li>
           </ul>
           <div class="card-footer">Prezzo: <span class="text-success">{{ totalPrice }} &euro;</span></div>
