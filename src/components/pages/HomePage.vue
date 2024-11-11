@@ -50,7 +50,7 @@ export default {
     getIconColor,
     visibleTypes() {
       this.types_visible = !this.types_visible;
-    }
+    },
   },
   mounted() {
     this.fetchRestaurants()

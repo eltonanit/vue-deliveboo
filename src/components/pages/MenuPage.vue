@@ -10,6 +10,9 @@ export default {
       dishes: [],  // Array per memorizzare i dati dei piatti
       loading: false,
       error: null,
+      cart: [],
+      totalPrice: 0,
+      ristoranteAttuale: null,
     };
   },
   methods: {
@@ -31,11 +34,46 @@ export default {
           this.loading = false;
         });
     },
+    addToCart(dish) {
+      if (this.canAddToCart(dish)) {
+        this.cart.push(dish);
+        localStorage.setItem('cart', JSON.stringify(this.cart));
+        this.calculateTotalPrice();
+      } else {
+        alert('Puoi aggiungere piatti al carrello da un solo ristorante alla volta');
+      }
+    },
+    canAddToCart(dish) {
+    return this.cart.every(item => item.restaurant.id === dish.restaurant.id);
+    },
+    calculateTotalPrice() {
+    this.totalPrice = this.cart.reduce((total, dish) => total + parseFloat(dish.price), 0);
+    },
+    removeFromCart(dishId) {
+      const index = this.cart.findIndex(dish => dish.id === dishId);
+      if (index > -1) {
+        this.cart.splice(index, 1);
+        this.calculateTotalPrice(); 
+        localStorage.setItem('cart', JSON.stringify(this.cart));
+      }
+    },
   },
   mounted() {
-    this.fetchDishes();  // Chiamata automatica quando il componente è montato
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      this.cart = JSON.parse(storedCart);
+      this.calculateTotalPrice();
+    };
+    this.ristoranteAttuale = this.$route.params.restaurantId;
+    this.fetchDishes(); 
+  },
+  computed: {
+  totalPrice() {
+    return this.cart.reduce((total, dish) => total + parseFloat(dish.price), 0);
   }
+}
 };
+
 </script>
 
 <template>
@@ -51,11 +89,14 @@ export default {
             <div class="col-md-4">
               <img src="https://picsum.photos/420/250" class="img-fluid" alt="Restaurant image">
             </div>
-            <div class="col-md-8 text-white">
+            <div class="col-md-8 text-white text-capitalize" v-for="dish in dishes" :key="dish.id">
               <div class="card-body">
-                <h5 class="card-title text_orange">Nome Ristorante</h5>
-                <p class="card-text m-0">Tipologie</p>
-                <p class="card-text">Eventuali Informazioni</p>
+                <h5 class="card-title text_orange">{{ dish.restaurant.name }}</h5>
+                <ul>
+                  <li v-for="type in dish.restaurant.types" :key="type.id">{{ type.name }}</li>
+                </ul>
+                <p class="card-text m-0">Indirizzo: <span class="text-capitalize">{{ dish.restaurant.address }}</span></p>
+                <p class="card-text m-0">Numero: <a href="tel:{{ dish.restaurant.phone }}">{{ dish.restaurant.phone }}</a></p>
               </div>
             </div>
           </div>
@@ -77,12 +118,12 @@ export default {
                 </div>
                 <div class="col-md-8 p-3 d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="card-title">{{ dish.name }}</h5>
+                    <h5 class="card-title text-uppercase">{{ dish.name }}</h5>
                     <p>{{ dish.description }}</p>
-                    <p>{{ dish.price }} &#8364;</p>
+                    <p class="text-success">{{ dish.price }} &#8364;</p>
                   </div>
                   <div class="">
-                    <button class="btn py-5 btn_orange"><i class="fa-solid fa-plus"></i></button>
+                    <button class="btn py-5 btn_orange" @click.prevent="addToCart(dish)"><i class="fa-solid fa-plus"></i></button>
                   </div>
                 </div>
               </div>
@@ -91,8 +132,18 @@ export default {
           </div>
         </div>
       </div>
+      <!-- Carrello -->
       <div class="col-12 col-lg-3 text-white">
-        Qui andrà il carrello
+        <div class="card">
+          <div class="card-header text-center text-uppercase">Carrello</div>
+          <ul class="list-group list-group-flush">
+            <li v-for="cartDish in cart" :key="cartDish.id" class="list-group-item">
+              - <span class="text-capitalize">{{ cartDish.name }}</span>: <span class="text-success">{{ cartDish.price }} &euro;</span>
+              <button class="btn btn-sm btn-danger ms-5" @click="removeFromCart(cartDish.id)"><i class="fas fa-trash-can"></i></button>
+            </li>
+          </ul>
+          <div class="card-footer">Prezzo: <span class="text-success">{{ totalPrice }} &euro;</span></div>
+        </div>
       </div>
     </div>
   </div>
