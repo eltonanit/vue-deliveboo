@@ -80,10 +80,6 @@ export default {
               <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }" >Check</p>
             </div>
           </div>
-          <div>
-            <h6>Prova</h6>
-          </div>
-
       </div>
       <div class="col-12 col-lg-9">
         <!-- Lista dei ristoranti -->
@@ -96,7 +92,7 @@ export default {
               <img src="https://picsum.photos/450/450" alt="Restaurant image" class="card-img-top img-fluid"/>
               <div class="card-body">
                 <h5 class="card-title">{{ restaurant.name }}</h5>
-                <p class="card-text">{{ restaurant.types.map(type => type.name).join(", ") }}</p>
+                <p class="card-text">{{ restaurant.types.map(type => type.name).sort().join(", ") }}</p>
                 <p class="card-text">Indirizzo: {{ restaurant.address }}</p>
                 <span class="d-lg-none">Telefono: <a class="text-dark" href="tel:{{ restaurant.phone }}">{{ restaurant.phone }}</a></span>
                 <p class="card-text d-none d-lg-block">Telefono: {{ restaurant.phone }}</p>
