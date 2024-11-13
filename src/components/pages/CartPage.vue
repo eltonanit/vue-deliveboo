@@ -48,7 +48,7 @@ export default {
     };
   },
   methods: {
-    togglePaymentForm() {
+    async togglePaymentForm() {
       if (this.cart.length === 0) {
         alert("Il carrello è vuoto!");
         return;
@@ -59,73 +59,103 @@ export default {
 
       // Recupera il Client Token da Braintree
       if (!this.clientToken) {
-        this.getClientToken();
+        await this.getClientToken();
       } else {
         this.setupBraintree();
       }
     },
-    getClientToken() {
-      axios
-        .get("http://localhost:8000/api/payment/token")
-        .then((response) => {
-          this.clientToken = response.data.token;
-          this.setupBraintree();
-        })
-        .catch((error) => {
-          console.error("Errore nel recupero del token:", error);
-          alert("Errore nel configurare il pagamento.");
-        });
+    async getClientToken() {
+      try {
+        console.log("Chiamata API per ottenere il token...");
+        const response = await axios.get(
+          "http://localhost:8000/api/payment/token"
+        );
+        this.clientToken = response.data.token;
+        console.log("Token ricevuto:", this.clientToken);
+
+        // Verifica se il token è presente
+        if (!this.clientToken) {
+          console.error("Token non ricevuto. Risposta API:", response.data);
+          alert("Errore nel recupero del token di pagamento.");
+          return;
+        }
+
+        this.setupBraintree();
+      } catch (error) {
+        console.error("Errore durante il recupero del token:", error);
+        alert("Errore nel configurare il pagamento.");
+      }
     },
     setupBraintree() {
       dropin.create(
         {
           authorization: this.clientToken,
           container: "#dropin-container",
+          card: {
+            cardholderName: {
+              required: true,
+            },
+            overrides: {
+              fields: {
+                cvv: {
+                  required: true,
+                },
+              },
+            },
+          },
         },
         (err, instance) => {
           if (err) {
-            console.error(err);
+            console.error("Errore durante la creazione del Drop-in UI:", err);
             alert("Errore nella configurazione del pagamento.");
             return;
           }
           this.dropinInstance = instance;
+          console.log("Drop-in UI creata con successo");
         }
       );
     },
-    submitPayment() {
-      if (this.dropinInstance) {
-        this.dropinInstance.requestPaymentMethod((err, payload) => {
-          if (err) {
-            console.error("Errore nel pagamento:", err);
-            alert("Errore nel metodo di pagamento.");
-            return;
-          }
-
-          const paymentData = {
-            nonce: payload.nonce,
-            amount: this.totalPrice,
-          };
-
-          // Invia la richiesta di pagamento al backend
-          axios
-            .post("/api/payment/submit", paymentData)
-            .then((response) => {
-              if (response.data.success) {
-                alert("Pagamento completato con successo!");
-                // Svuota il carrello
-                this.cart = [];
-                localStorage.removeItem("cart");
-                this.showPaymentForm = false;
-              } else {
-                alert("Errore nel completamento del pagamento.");
-              }
-            })
-            .catch((error) => {
-              console.error("Errore durante il pagamento:", error);
-              alert("Pagamento fallito.");
-            });
-        });
+    async submitPayment() {
+      if (!this.dropinInstance) {
+        alert("Errore nel metodo di pagamento.");
+        return;
       }
+
+      this.dropinInstance.requestPaymentMethod(async (err, payload) => {
+        if (err) {
+          console.error("Errore nel pagamento:", err);
+          alert("Errore nel metodo di pagamento.");
+          return;
+        }
+
+        const paymentData = {
+          nonce: payload.nonce,
+          amount: this.totalPrice,
+        };
+
+        // Invia la richiesta di pagamento al backend
+        try {
+          const response = await axios.post(
+            "http://localhost:8000/api/payment/submit",
+            paymentData
+          );
+
+          if (response.data.success) {
+            alert("Pagamento completato con successo!");
+            // Svuota il carrello
+            this.cart = [];
+            localStorage.removeItem("cart");
+            this.showPaymentForm = false;
+          } else {
+            alert(
+              `Errore nel completamento del pagamento: ${response.data.error}`
+            );
+          }
+        } catch (error) {
+          console.error("Errore durante il pagamento:", error);
+          alert("Pagamento fallito.");
+        }
+      });
     },
     removeFromCart(dishId) {
       const index = this.cart.findIndex((dish) => dish.id === dishId);
@@ -156,7 +186,7 @@ export default {
 .text_orange {
   color: rgba(255, 128, 1, 1);
 }
-.container-cart{
+.container-cart {
   height: 75vh;
   max-width: 1200px;
   margin: 0 auto;
