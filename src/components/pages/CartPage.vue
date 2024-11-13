@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-4">
+  <div class="container-cart py-4">
     <h2 class="text_orange mb-3">Carrello</h2>
     <ul class="list-group mb-3">
       <li
@@ -155,6 +155,11 @@ export default {
 <style lang="scss" scoped>
 .text_orange {
   color: rgba(255, 128, 1, 1);
+}
+.container-cart{
+  height: 75vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .btn_orange {
