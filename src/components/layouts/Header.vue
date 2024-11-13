@@ -10,7 +10,7 @@ export default {
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div class="logo">
-          <span class="logo">Delive</span><span class="boo">Boo</span>
+          <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0"> <span class="logo">Delive</span><span class="boo">Boo</span></router-link>
         </div>
         <p class="m-0 text-white">Qui andrà un menù</p>
       </div>
@@ -22,6 +22,7 @@ export default {
 <style scoped>
 .header {
   background: #4D148C;
+  height: 10vh;
 }
 
 .logo-container {

@@ -60,7 +60,7 @@ export default {
 </script>
 
 <template>
-  <div class="container py-5">
+  <div class="container-home py-5">
     <div class="row">
       <div class="col-12 mb-5 col-lg-3 text-white">
         <h5 class="mb-3">Filtra Ristoranti</h5>
@@ -117,6 +117,11 @@ export default {
     /* background-color: rgba(255, 255, 255, 0.233); */
     border-radius: 15px;
   }
+}
+.container-home{
+  height: 75vh;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .text_orange {

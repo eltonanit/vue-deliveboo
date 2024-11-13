@@ -15,7 +15,7 @@
       </li>
     </ul>
     <div class="d-flex justify-content-between">
-      <span>Totale:</span>
+      <span class="text-white">Totale:</span>
       <span class="text-success">{{ totalPrice }} €</span>
     </div>
     <button class="btn btn_orange mt-3 w-100" @click="togglePaymentForm">
