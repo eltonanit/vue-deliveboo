@@ -44,9 +44,15 @@ export default {
         this.cart.push(dish);
         this.saveCartToLocalStorage();
       } else {
-        alert(
-          "Puoi aggiungere piatti al carrello da un solo ristorante alla volta"
+        // Se il ristorante è diverso, chiedi all'utente se vuole svuotare il carrello
+        const confirmClear = confirm(
+          "Hai piatti da un altro ristorante nel carrello. Vuoi svuotarlo e aggiungere i nuovi piatti?"
         );
+        if (confirmClear) {
+          // Se l'utente conferma, svuotiamo il carrello e aggiungiamo il nuovo piatto
+          this.cart = [dish];
+          this.saveCartToLocalStorage();
+        }
       }
     },
 
