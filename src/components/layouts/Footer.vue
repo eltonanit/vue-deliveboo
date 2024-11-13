@@ -5,34 +5,33 @@ export default {
 </script>
 
 <template>
-  <div class="container p-5">
+  <div class="container-footer overflow-hidden">
     <div class="row">
-      <div class="col-12 pt-5">
-        <div class="footer-content">
-          <div class="footer-left pt-5 text_orange">
+      <div class="col-12">
+        <div class="footer-content mt-5">
+          <div class="footer-left text_orange">
             <p>&copy; 2024 Deliveboo - All rights reserved.</p>
           </div>
-          <div class="footer-links pt-5">
-            <ul>
+          <div class="footer-links">
+            <ul class="list-unstyled d-flex">
               <li><a href="/about">Chi Siamo</a></li>
               <li><a href="/privacy-policy">Privacy Policy</a></li>
               <li><a href="/contact">Contatti</a></li>
             </ul>
           </div>
-          <div class="pt-5">
-            <h5 class="text-white mb-3">Social</h5>
-            <ul class="list-unstyled">
-              <li>
+          <div class="mt-4">
+            <ul class="list-unstyled d-flex">
+              <li class="me-3">
                 <a href="https://www.facebook.com/deliveboo" target="_blank" class="social-icon">
                   <i class="fab fa-facebook-f"></i>
                 </a>
               </li>
-              <li>
+              <li class="me-3">
                 <a href="https://www.instagram.com/deliveboo" target="_blank" class="social-icon">
                   <i class="fab fa-instagram"></i>
                 </a>
               </li>
-              <li>
+              <li class="me-3">
                 <a href="https://twitter.com/deliveboo" target="_blank" class="social-icon">
                   <i class="fab fa-twitter"></i>
                 </a>
@@ -46,6 +45,10 @@ export default {
 </template>
 
 <style scoped>
+
+.container-footer{
+  height: calc(100vh - 85vh);
+}
 
 .footer-content {
   display: flex;
