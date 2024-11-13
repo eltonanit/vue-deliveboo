@@ -121,6 +121,16 @@ export default {
         return;
       }
 
+      // Raccogli le informazioni dell'utente per l'ordine
+      const customerName = prompt("Inserisci il tuo nome:");
+      const customerSurname = prompt("Inserisci il tuo cognome:");
+      const shippingAddress = prompt("Inserisci il tuo indirizzo di spedizione:");
+
+      if (!customerName || !customerSurname || !shippingAddress) {
+        alert("Tutti i dati sono obbligatori!");
+        return;
+      }
+
       this.dropinInstance.requestPaymentMethod(async (err, payload) => {
         if (err) {
           console.error("Errore nel pagamento:", err);
@@ -131,6 +141,11 @@ export default {
         const paymentData = {
           nonce: payload.nonce,
           amount: this.totalPrice,
+          cart: this.cart, // Passa anche il carrello
+          customer_name: customerName,
+          customer_surname: customerSurname,
+          shipping_address: shippingAddress,
+          total_items: this.cart.length, // Numero totale di piatti nel carrello
         };
 
         // Invia la richiesta di pagamento al backend
@@ -142,6 +157,9 @@ export default {
 
           if (response.data.success) {
             alert("Pagamento completato con successo!");
+            // Salva l'ordine nel database
+            await this.createOrder(response.data.orderId);
+
             // Svuota il carrello
             this.cart = [];
             localStorage.removeItem("cart");
@@ -157,6 +175,7 @@ export default {
         }
       });
     },
+
     removeFromCart(dishId) {
       const index = this.cart.findIndex((dish) => dish.id === dishId);
       if (index > -1) {
@@ -187,7 +206,7 @@ export default {
   color: rgba(255, 128, 1, 1);
 }
 .container-cart {
-  height: 75vh;
+  height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
 }
