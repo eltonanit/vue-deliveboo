@@ -79,6 +79,8 @@ export default {
     padding: 20px;
     height: 75vh;
     color: white;
+    max-width: 1330px;
+    margin: 0 auto;
   }
   
   .stats {
