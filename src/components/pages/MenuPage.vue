@@ -169,14 +169,14 @@ export default {
         <div class="row g-4">
           <div v-for="dish in dishes" :key="dish.id" class="col-12 col-md-6">
             <div class="card h-100 shadow-sm">
-              <img
+              <!-- <img
                 :src="
                   dish.image ||
                   'https://via.placeholder.com/450x450?text=No+Image'
                 "
                 class="card-img-top"
                 alt="dish_image"
-              />
+              /> -->
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">{{ dish.name }}</h5>
                 <p class="card-text flex-grow-1">{{ dish.description }}</p>

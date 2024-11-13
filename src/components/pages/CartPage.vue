@@ -5,7 +5,7 @@
       <li
         v-for="dish in cart"
         :key="dish.id"
-        class="list-group-item d-flex justify-content-between"
+        class="list-group-item d-flex justify-content-between overflow-y"
       >
         <span>{{ dish.name }}</span>
         <span>{{ dish.price }} €</span>
@@ -16,7 +16,7 @@
     </ul>
     <div class="d-flex justify-content-between">
       <span class="text-white">Totale:</span>
-      <span class="text-success">{{ totalPrice }} €</span>
+      <span class="text-white">{{ totalPrice }} €</span>
     </div>
     <button class="btn btn_orange mt-3 w-100" @click="togglePaymentForm">
       Procedi al pagamento
