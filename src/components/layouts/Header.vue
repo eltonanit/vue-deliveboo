@@ -47,9 +47,6 @@ export default {
           <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0"> <span class="logo">Delive</span><span class="boo">Boo</span></router-link>
         </div>
         <div class="text-center position-relative">
-          <router-link class="btn bg-orange" :to="{ name: 'Order' }">
-            <i class="fas fa-table-list text-white"></i>
-          </router-link>
           <router-link class="btn bg-orange ms-4" :to="{ name: 'Cart' }">
             <i class="fas fa-cart-shopping text-white"></i>
           </router-link>
