@@ -64,18 +64,15 @@ export default {
         this.setupBraintree();
       }
     },
+
     async getClientToken() {
       try {
-        console.log("Chiamata API per ottenere il token...");
         const response = await axios.get(
           "http://localhost:8000/api/payment/token"
         );
         this.clientToken = response.data.token;
-        console.log("Token ricevuto:", this.clientToken);
 
-        // Verifica se il token è presente
         if (!this.clientToken) {
-          console.error("Token non ricevuto. Risposta API:", response.data);
           alert("Errore nel recupero del token di pagamento.");
           return;
         }
@@ -86,6 +83,7 @@ export default {
         alert("Errore nel configurare il pagamento.");
       }
     },
+
     setupBraintree() {
       dropin.create(
         {
@@ -111,20 +109,21 @@ export default {
             return;
           }
           this.dropinInstance = instance;
-          console.log("Drop-in UI creata con successo");
         }
       );
     },
+
     async submitPayment() {
       if (!this.dropinInstance) {
         alert("Errore nel metodo di pagamento.");
         return;
       }
 
-      // Raccogli le informazioni dell'utente per l'ordine
       const customerName = prompt("Inserisci il tuo nome:");
       const customerSurname = prompt("Inserisci il tuo cognome:");
-      const shippingAddress = prompt("Inserisci il tuo indirizzo di spedizione:");
+      const shippingAddress = prompt(
+        "Inserisci il tuo indirizzo di spedizione:"
+      );
 
       if (!customerName || !customerSurname || !shippingAddress) {
         alert("Tutti i dati sono obbligatori!");
@@ -141,14 +140,12 @@ export default {
         const paymentData = {
           nonce: payload.nonce,
           amount: this.totalPrice,
-          cart: this.cart, // Passa anche il carrello
           customer_name: customerName,
           customer_surname: customerSurname,
           shipping_address: shippingAddress,
-          total_items: this.cart.length, // Numero totale di piatti nel carrello
+          total_items: this.cart.length,
         };
 
-        // Invia la richiesta di pagamento al backend
         try {
           const response = await axios.post(
             "http://localhost:8000/api/payment/submit",
@@ -157,10 +154,7 @@ export default {
 
           if (response.data.success) {
             alert("Pagamento completato con successo!");
-            // Salva l'ordine nel database
-            await this.createOrder(response.data.orderId);
-
-            // Svuota il carrello
+            await this.saveOrder(response.data.orderId);
             this.cart = [];
             localStorage.removeItem("cart");
             this.showPaymentForm = false;
@@ -176,6 +170,29 @@ export default {
       });
     },
 
+    async saveOrder(orderId) {
+      try {
+        const orderData = {
+          order_id: orderId,
+          customer_name: this.customer_name,
+          customer_surname: this.customer_surname,
+          shipping_address: this.shipping_address,
+          items: this.cart.map((dish) => ({
+            id: dish.id,
+            name: dish.name,
+            price: dish.price,
+          })),
+          total_price: this.totalPrice,
+        };
+
+        await axios.post("http://localhost:8000/api/orders/save", orderData);
+        console.log("Ordine salvato con successo nel database");
+      } catch (error) {
+        console.error("Errore nel salvataggio dell'ordine:", error);
+        alert("Errore nel salvataggio dell'ordine.");
+      }
+    },
+
     removeFromCart(dishId) {
       const index = this.cart.findIndex((dish) => dish.id === dishId);
       if (index > -1) {
@@ -184,6 +201,7 @@ export default {
         localStorage.setItem("cart", JSON.stringify(this.cart));
       }
     },
+
     calculateTotalPrice() {
       this.totalPrice = this.cart.reduce(
         (total, dish) => total + parseFloat(dish.price),
@@ -191,6 +209,7 @@ export default {
       );
     },
   },
+
   mounted() {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
