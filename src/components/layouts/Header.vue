@@ -60,8 +60,7 @@ export default {
 
 <style scoped>
 .header {
-  background: #4D148C;
-  height: 10vh;
+  background-color: #4D148C;
 }
 .position-relative{
   position: relative
