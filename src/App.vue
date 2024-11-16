@@ -39,11 +39,15 @@ export default {
 
 /* App layout */
 #app {
-  background: rgb(77,20,140);
-  background: linear-gradient(180deg, rgba(77,20,140,1) 48%, rgba(255,128,0,1) 100%);
+  
 
   header {
-    border-bottom: 1px solid rgba(255,128,1,1);
+    background-color: rgb(77,20,140);
+    border-bottom: 2px solid rgba(255,128,1,1);
+  }
+
+  main {
+    background: linear-gradient(180deg, rgba(77,20,140,1) 48%, rgba(255,128,0,1) 100%);
   }
 
   footer {
