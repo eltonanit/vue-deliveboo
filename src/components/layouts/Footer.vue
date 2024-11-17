@@ -5,93 +5,75 @@ export default {
 </script>
 
 <template>
-  <div class="container-footer overflow-hidden">
-    <div class="row">
-      <div class="col-12">
-        <div class="footer-content mt-5">
-          <div class="footer-left text_orange">
-            <p>&copy; 2024 Deliveboo - All rights reserved.</p>
-          </div>
-          <div class="footer-links">
-            <ul class="list-unstyled d-flex">
-              <li><a href="/about">Chi Siamo</a></li>
-              <li><a href="/privacy-policy">Privacy Policy</a></li>
-              <li><a href="/contact">Contatti</a></li>
-            </ul>
-          </div>
-          <div class="mt-4">
-            <ul class="list-unstyled d-flex">
-              <li class="me-3">
-                <a href="https://www.facebook.com/deliveboo" target="_blank" class="social-icon">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-              </li>
-              <li class="me-3">
-                <a href="https://www.instagram.com/deliveboo" target="_blank" class="social-icon">
-                  <i class="fab fa-instagram"></i>
-                </a>
-              </li>
-              <li class="me-3">
-                <a href="https://twitter.com/deliveboo" target="_blank" class="social-icon">
-                  <i class="fab fa-twitter"></i>
-                </a>
-              </li>
-            </ul>
+  <div class="bg-dark text-white py-5">
+    <div class="container">
+      <div class="row">
+
+        <!-- Logo e Informazioni tablet e maggiore-->
+        <div class="col-12 col-md-3 d-none d-md-block text-center text-md-start mb-3">
+          <h2 class="text_orange">Deliveboo</h2>
+          <p class="mb-0">&copy; 2024 Deliveboo - All rights reserved.</p>
+        </div>
+
+        <!-- Link Utili -->
+        <div class="col-12 col-md-3 text-center mb-3">
+          <h5 class="text-warning">Link Utili</h5>
+          <ul class="list-unstyled mb-0">
+            <li><a href="/about" class="text-white text-decoration-none">Chi Siamo</a></li>
+            <li><a href="/privacy-policy" class="text-white text-decoration-none">Privacy Policy</a></li>
+            <li><a href="/contact" class="text-white text-decoration-none">Contatti</a></li>
+          </ul>
+        </div>
+
+        <!-- Social Media -->
+        <div class="col-12 col-md-3 text-center mb-3">
+          <h5 class="text-warning">Seguici</h5>
+          <a href="https://www.facebook.com/deliveboo" target="_blank" class="text-white me-3">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.instagram.com/deliveboo" target="_blank" class="text-white me-3">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://twitter.com/deliveboo" target="_blank" class="text-white">
+            <i class="fab fa-twitter"></i>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-3 d-md-flex flex-md-column text-center mb-3">
+          <h5 class="text-warning">Stay Tuned</h5>
+          <p class="mb-3">Presto anche su:</p>
+          <div class="d-flex d-md-block d-xl-flex justify-content-center">
+            <div class="text-white mb-md-3">
+              <span class="border rounded py-1 px-2 me-2 me-md-0 me-xl-2">
+                <i class="fa-brands fa-apple"></i>
+                <span> App Store</span>
+              </span>
+            </div>
+            <div class="text-white">
+              <span class="border rounded py-1 px-2">
+                <i class="fa-brands fa-google-play"></i>
+                <span> Google Play</span>
+              </span>
+            </div>
           </div>
         </div>
+
+        <!-- Logo e Informazioni mobile-->
+        <div class="col-12 col-md-3 d-md-none text-center text-md-start mb-3">
+          <h2 class="text_orange">Deliveboo</h2>
+          <p class="mb-0">&copy; 2024 Deliveboo - All rights reserved.</p>
+        </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
-.container-footer{
-  height: calc(100vh - 85vh);
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.footer-left p {
-  margin: 0;
-}
-
-.footer-links ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 20px;
-}
-
-.footer-links a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.footer-links a:hover {
-  color: #ffd700; /* colore dorato per hover */
-}
-
-.social-icon {
-  color: #fff;
-  font-size: 18px;
-  transition: color 0.3s;
-}
-
-.social-icon:hover {
-  color: #ffd700; /* colore dorato per hover */
-}
-
 .text_orange {
-  color: rgba(255,128,1,1);
+  color: rgba(255, 128, 1, 1);
+}
+.text-warning {
+  color: #ffd700 !important;
 }
 </style>

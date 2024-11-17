@@ -1,23 +1,28 @@
 <script>
 import axios from "axios";
 import { store } from "../../store.js";
+import { useCartStore } from "../../cartStore.js";
 
 export default {
-  props: ["restaurantId"], // Riceve l'id del ristorante come prop
+  props: ["restaurantId"],
+  setup() {
+    const cartStore = useCartStore();
+    cartStore.loadCartFromLocalStorage(); // Caricamento al setup
+
+    return {
+      cartStore,
+    };
+  },
   data() {
     return {
       store,
-      dishes: [], // Array per memorizzare i dati dei piatti
+      dishes: [],
       loading: false,
       error: null,
-      cart: [], // Carrello
-      ristoranteAttuale: null, // Ristorante attuale
-      showModal: false, // Flag per la modale
-      dishToAdd: null, // Piatto da aggiungere
+      ristoranteAttuale: null,
     };
   },
   methods: {
-    // Recupero dei piatti del ristorante
     fetchDishes() {
       this.loading = true;
       this.error = null;
@@ -42,103 +47,32 @@ export default {
           this.loading = false;
         });
     },
-
-    // Aggiunta piatto al carrello con gestione della quantità
+    // Aggiunta piatto al carrello
     addToCart(dish) {
-      // Se il ristorante del piatto è diverso dal ristorante attuale, mostra la modale
-      if (
-        this.cart.length > 0 &&
-        this.cart[0].restaurant.id !== dish.restaurant.id
-      ) {
-        this.dishToAdd = dish;
-        this.showModal = true; // Mostra la modale
-      } else {
-        // Se il ristorante è lo stesso, aggiungi normalmente il piatto
-        this.addDishToCart(dish);
-      }
-    },
-
-    // Aggiungi piatto al carrello
-    addDishToCart(dish) {
-      const existingDish = this.cart.find((item) => item.id === dish.id);
-
-      if (existingDish) {
-        existingDish.quantity += 1;
-      } else {
-        this.cart.push({
-          ...dish,
-          price: parseFloat(dish.price),
-          quantity: 1,
-        });
-      }
-      this.saveCartToLocalStorage();
-    },
-
-    // Annulla l'aggiunta del piatto e chiude la modale
-    cancelClearCart() {
-      this.showModal = false;
-      this.dishToAdd = null;
-    },
-
-    // Conferma l'aggiunta del piatto e chiude la modale
-    confirmAddToCart() {
-      // Svuota il carrello prima di aggiungere piatti dal nuovo ristorante
-      this.cart = [];
-
-      if (this.dishToAdd) {
-        this.addDishToCart(this.dishToAdd);
-      }
-
-      this.showModal = false;
-      this.dishToAdd = null;
-    },
-
-    // Salvataggio del carrello nel localStorage
-    saveCartToLocalStorage() {
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-    },
-
-    // Caricamento del carrello dal localStorage
-    loadCartFromLocalStorage() {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        this.cart = JSON.parse(storedCart);
-      }
+      this.cartStore.addToCart(dish); // Chiama il metodo dello store
     },
   },
+
   mounted() {
-    this.loadCartFromLocalStorage(); // Caricamento del carrello
-    this.ristoranteAttuale = this.$route.params.restaurantId; // Recupero dell'ID del ristorante
-    this.fetchDishes(); // Caricamento dei piatti
+    this.ristoranteAttuale = this.$route.params.restaurantId;
+    this.fetchDishes();
   },
   computed: {
-    // Nome del ristorante
     restaurantName() {
       return this.dishes[0]?.restaurant?.name || "Ristorante";
     },
-
-    // Tipologie del ristorante
     restaurantTypes() {
-      return this.dishes[0]?.restaurant?.types || [];
+      return this.dishes[0]?.restaurant?.types || "Tipologie non disponibili";
     },
-
-    // Indirizzo del ristorante
     restaurantAddress() {
       return this.dishes[0]?.restaurant?.address || "Indirizzo non disponibile";
     },
-
-    // Numero di telefono del ristorante
     restaurantPhone() {
       return this.dishes[0]?.restaurant?.phone || "Numero non disponibile";
     },
-
-    // Calcolo del prezzo totale
     totalPrice() {
-      return this.cart
-        .reduce(
-          (total, dish) => total + parseFloat(dish.price || 0) * dish.quantity,
-          0
-        )
+      return this.cartStore.cart
+        .reduce((total, dish) => total + parseFloat(dish.price || 0)* dish.quantity, 0)
         .toFixed(2); // Formattato con due decimali
     },
 
@@ -162,7 +96,7 @@ export default {
           <i class="fa-solid fa-arrow-left"></i> Indietro
         </router-link>
         <div class="card border-0 bg-transparent mb-3 mt-3">
-          <div class="row g-0 align-items-center">
+          <div class="row g-0 ">
             <div class="col-md-4">
               <img
                 src="https://picsum.photos/420/250"
@@ -170,20 +104,21 @@ export default {
                 alt="Restaurant image"
               />
             </div>
-            <div class="col-md-8 text-white text-capitalize">
-              <div class="card-body">
-                <h5 class="card-title text_orange">{{ restaurantName }}</h5>
-                <ul class="list-unstyled">
-                  <li v-for="type in restaurantTypes" :key="type.id">
-                    {{ type.name }}
-                  </li>
-                </ul>
+            <div class="col-md-8 text-white d-flex flex-column justify-content-evenly">
+              <div>
+                <h2 class="card-title text_orange">{{ restaurantName }}</h2>
+                <span v-for="type in restaurantTypes" :key="type.id" class="fst-italic me-2">
+                  {{ type.name }}
+                </span>
+              </div>
+              <div>
                 <p class="m-0">
-                  Indirizzo: <span>{{ restaurantAddress }}</span>
+                  <p class="m-0">Ci trovi in:</p> 
+                  <p class="fst-italic">{{ restaurantAddress }}</p>
                 </p>
                 <p class="m-0">
-                  Numero:
-                  <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
+                  <p class="mb-1">Vuoi Chiedere informazioni? <i class="fa-solid fa-arrow-down"></i></p>
+                  <span>Chiama qui: </span><a class="text-decoration-none text_orange fst-italic icon-link" href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
                 </p>
               </div>
             </div>
@@ -204,10 +139,7 @@ export default {
                 <h5 class="card-title">{{ dish.name }}</h5>
                 <p class="card-text flex-grow-1">{{ dish.description }}</p>
                 <p class="text-success">{{ dish.price }} &#8364;</p>
-                <button
-                  class="btn btn_orange mt-2 w-100"
-                  @click.prevent="addToCart(dish)"
-                >
+                <button class="btn btn_orange mt-2 w-100" @click.prevent="addToCart(dish)">
                   <i class="fa-solid fa-plus"></i> Aggiungi al carrello
                 </button>
               </div>
@@ -218,11 +150,11 @@ export default {
         <!-- Pulsante per andare al carrello -->
         <div class="mt-4 text-center">
           <router-link
-            v-if="cart.length > 0"
+            v-if="cartStore.cart.length > 0"
             :to="{ name: 'Cart' }"
-            class="btn btn_orange"
+            class="btn btn_orange border"
           >
-            Vai al carrello ({{ totalQuantity }} piatti)
+            Vai al carrello ({{ cartStore.cart.length }} piatti)
           </router-link>
         </div>
       </div>

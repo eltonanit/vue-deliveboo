@@ -1,40 +1,18 @@
 <script>
+import { useCartStore } from "../../cartStore";
+
 export default {
-  data() {
+  name: "Header",
+  setup() {
+    const cartStore = useCartStore();
+
+    // Carica il carrello dal localStorage quando il componente è montato
+    cartStore.loadCartFromLocalStorage();
+
     return {
-      cart: [], // Carrello vuoto inizialmente
+      cartStore,
     };
   },
-  mounted() {
-    this.loadCartFromLocalStorage(); // Carica il carrello dal localStorage quando il componente è montato
-  },
-  methods: {
-    // Aggiungi un piatto al carrello
-    addToCart(dish) {
-      this.cart.push(dish);
-      this.saveCartToLocalStorage();
-    },
-
-    // Salva il carrello nel localStorage
-    saveCartToLocalStorage() {
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-    },
-
-    // Carica il carrello dal localStorage
-    loadCartFromLocalStorage() {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        this.cart = JSON.parse(storedCart);
-      }
-    },
-  },
-  computed: {
-    // Calcola il numero di piatti nel carrello
-    cartLength() {
-      return this.cart.length;
-    },
-  },
-  name: "Header"
 };
 </script>
 
@@ -46,11 +24,11 @@ export default {
         <div class="logo">
           <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0"> <span class="logo">Delive</span><span class="boo">Boo</span></router-link>
         </div>
-        <div class="text-center position-relative">
+        <div class="text-center position-relative pe-1">
           <router-link class="btn bg-orange ms-4" :to="{ name: 'Cart' }">
             <i class="fas fa-cart-shopping text-white"></i>
           </router-link>
-          <span class="position-absolute">{{ cart.length }}</span>
+          <span class="position-absolute">{{ cartStore.cartLength }}</span>
         </div>
       </div>
     </div>
@@ -60,16 +38,15 @@ export default {
 
 <style scoped>
 .header {
-  background: #4D148C;
-  height: 10vh;
+  background-color: #4D148C;
 }
 .position-relative{
   position: relative
 }
 .position-absolute {
   position: absolute;
-  top: -5px; 
-  right: -10px; 
+  top: -8px; 
+  right: -6px; 
   background-color: red;
   border-radius: 50%;
   width: 20px; 

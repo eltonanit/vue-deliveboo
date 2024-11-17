@@ -177,6 +177,10 @@ export default {
 
           if (response.data.success) {
             alert("Pagamento completato con successo!");
+            // Salva l'ordine nel database
+            // await this.createOrder(response.data.orderId);
+
+            // Svuota il carrello
             this.cart = [];
             localStorage.removeItem("cart");
             this.showPaymentForm = false;
