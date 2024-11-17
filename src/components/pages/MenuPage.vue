@@ -20,11 +20,14 @@ export default {
       this.loading = true;
       this.error = null;
 
-      axios
-        .get(`${this.store.baseUrl}/dishes?restaurant_id=${this.restaurantId}`)
+      axios.get(`${this.store.baseUrl}/dishes?restaurant_id=${this.restaurantId}`)
         .then((response) => {
           if (response.data.success) {
-            this.dishes = response.data.data;
+            // Assicurati che il prezzo di ogni piatto sia un numero
+            this.dishes = response.data.data.map(dish => ({
+              ...dish,
+              price: parseFloat(dish.price) // Converte il prezzo in numero
+            }));
           } else {
             this.error = "Errore nel recupero dei piatti.";
           }
@@ -38,48 +41,47 @@ export default {
         });
     },
 
-    // Aggiunta piatto al carrello
+    // Aggiunta piatto al carrello con gestione della quantità
     addToCart(dish) {
-      if (this.canAddToCart(dish)) {
-        this.cart.push(dish);
-        this.saveCartToLocalStorage();
+      const existingDish = this.cart.find(item => item.id === dish.id);
+
+      if (existingDish) {
+        existingDish.quantity += 1; // Incrementa la quantità
       } else {
-        // Se il ristorante è diverso, chiedi all'utente se vuole svuotare il carrello
-        const confirmClear = confirm(
-          "Hai piatti da un altro ristorante nel carrello. Vuoi svuotarlo e aggiungere i nuovi piatti?"
-        );
-        if (confirmClear) {
-          // Se l'utente conferma, svuotiamo il carrello e aggiungiamo il nuovo piatto
-          this.cart = [dish];
-          this.saveCartToLocalStorage();
-        }
+        // Aggiunge il piatto al carrello con il prezzo convertito in numero
+        this.cart.push({
+          ...dish,
+          price: parseFloat(dish.price), // Converte il prezzo in numero
+          quantity: 1
+        });
       }
+      this.saveCartToLocalStorage();
     },
 
     // Verifica se si può aggiungere il piatto al carrello
     canAddToCart(dish) {
-      // Controllo se il carrello è vuoto o se i piatti sono dello stesso ristorante
-      return (
-        this.cart.length === 0 ||
-        this.cart[0]?.restaurant?.id === dish.restaurant.id
-      );
+      return this.cart.length === 0 || this.cart[0]?.restaurant?.id === dish.restaurant.id;
     },
 
-    // Rimozione piatto dal carrello
+    // Rimozione piatto dal carrello (con gestione della quantità)
     removeFromCart(dishId) {
       const index = this.cart.findIndex((dish) => dish.id === dishId);
       if (index !== -1) {
-        this.cart.splice(index, 1);
+        if (this.cart[index].quantity > 1) {
+          this.cart[index].quantity -= 1; // Decrementa la quantità
+        } else {
+          this.cart.splice(index, 1); // Rimuove il piatto se la quantità è 1
+        }
         this.saveCartToLocalStorage();
       }
     },
 
-    // Calcolo e salvataggio del carrello nel localStorage
+    // Salvataggio del carrello nel localStorage
     saveCartToLocalStorage() {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    // Recupero del carrello dal localStorage
+    // Caricamento del carrello dal localStorage
     loadCartFromLocalStorage() {
       const storedCart = localStorage.getItem("cart");
       if (storedCart) {
@@ -87,13 +89,11 @@ export default {
       }
     },
   },
-
   mounted() {
     this.loadCartFromLocalStorage(); // Caricamento del carrello
     this.ristoranteAttuale = this.$route.params.restaurantId; // Recupero dell'ID del ristorante
     this.fetchDishes(); // Caricamento dei piatti
   },
-
   computed: {
     // Nome del ristorante
     restaurantName() {
@@ -118,47 +118,41 @@ export default {
     // Calcolo del prezzo totale
     totalPrice() {
       return this.cart
-        .reduce((total, dish) => total + parseFloat(dish.price || 0), 0)
+        .reduce((total, dish) => total + parseFloat(dish.price || 0) * dish.quantity, 0)
         .toFixed(2); // Formattato con due decimali
     },
+
+    // Calcolo del numero totale di piatti nel carrello
+    totalQuantity() {
+      return this.cart.reduce((total, dish) => total + dish.quantity, 0);
+    }
   },
 };
 </script>
+
 
 <template>
   <div class="container py-4">
     <div class="row">
       <!-- Informazioni Ristorante -->
       <div class="col-12 mb-5">
-        <router-link
-          :to="{ name: 'Home' }"
-          class="text_orange link-underline link-underline-opacity-0"
-        >
+        <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0">
           <i class="fa-solid fa-arrow-left"></i> Indietro
         </router-link>
         <div class="card border-0 bg-transparent mb-3 mt-3">
           <div class="row g-0 align-items-center">
             <div class="col-md-4">
-              <img
-                src="https://picsum.photos/420/250"
-                class="img-fluid rounded"
-                alt="Restaurant image"
-              />
+              <img src="https://picsum.photos/420/250" class="img-fluid rounded" alt="Restaurant image" />
             </div>
             <div class="col-md-8 text-white text-capitalize">
               <div class="card-body">
                 <h5 class="card-title text_orange">{{ restaurantName }}</h5>
                 <ul class="list-unstyled">
-                  <li v-for="type in restaurantTypes" :key="type.id">
-                    {{ type.name }}
-                  </li>
+                  <li v-for="type in restaurantTypes" :key="type.id">{{ type.name }}</li>
                 </ul>
+                <p class="m-0">Indirizzo: <span>{{ restaurantAddress }}</span></p>
                 <p class="m-0">
-                  Indirizzo: <span>{{ restaurantAddress }}</span>
-                </p>
-                <p class="m-0">
-                  Numero:
-                  <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
+                  Numero: <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
                 </p>
               </div>
             </div>
@@ -175,22 +169,11 @@ export default {
         <div class="row g-4">
           <div v-for="dish in dishes" :key="dish.id" class="col-12 col-md-6">
             <div class="card h-100 shadow-sm">
-              <!-- <img
-                :src="
-                  dish.image ||
-                  'https://via.placeholder.com/450x450?text=No+Image'
-                "
-                class="card-img-top"
-                alt="dish_image"
-              /> -->
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">{{ dish.name }}</h5>
                 <p class="card-text flex-grow-1">{{ dish.description }}</p>
                 <p class="text-success">{{ dish.price }} &#8364;</p>
-                <button
-                  class="btn btn_orange mt-2 w-100"
-                  @click.prevent="addToCart(dish)"
-                >
+                <button class="btn btn_orange mt-2 w-100" @click.prevent="addToCart(dish)">
                   <i class="fa-solid fa-plus"></i> Aggiungi al carrello
                 </button>
               </div>
@@ -198,21 +181,16 @@ export default {
           </div>
         </div>
 
-        <!-- Pulsante per andare alla pagina del carrello -->
+        <!-- Pulsante per andare al carrello -->
         <div class="mt-4 text-center">
-          <router-link
-            v-if="cart.length > 0"
-            :to="{ name: 'Cart' }"
-            class="btn btn_orange"
-          >
-            Vai al carrello ({{ cart.length }} piatti)
+          <router-link v-if="cart.length > 0" :to="{ name: 'Cart' }" class="btn btn_orange">
+            Vai al carrello ({{ totalQuantity }} piatti)
           </router-link>
         </div>
       </div>
     </div>
   </div>
 </template>
-*
 
 <style lang="scss" scoped>
 .text_orange {
