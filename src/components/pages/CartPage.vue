@@ -1,5 +1,144 @@
+<script>
+import dropin from "braintree-web-drop-in";
+import axios from "axios";
+import { useCartStore } from "../../cartStore";
+
+export default {
+  setup() {
+    const cartStore = useCartStore();
+    cartStore.loadCartFromLocalStorage();
+    return {
+      cartStore,
+    };
+  },
+  props: ['restaurantId'],
+  data() {
+    return {
+      showPaymentForm: false,
+      customerName: "",
+      customerSurname: "",
+      shippingAddress: "",
+      dropinInstance: null,
+      clientToken: null,
+      paymentLoading: false,
+      paymentError: null,
+    };
+  },
+  computed: {
+    cart() {
+      return this.cartStore.cart;
+    },
+    totalPrice() {
+      return this.cartStore.totalPrice;
+    },
+  },
+
+  methods: {
+    async togglePaymentForm() {
+      if (this.cartStore.cartLength === 0) {
+        alert("Il carrello è vuoto!");
+        return;
+      }
+
+      this.showPaymentForm = true;
+
+      if (!this.clientToken) {
+        await this.getClientToken();
+      } else {
+        this.setupBraintree();
+      }
+    },
+
+    async getClientToken() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/payment/token"
+        );
+        this.clientToken = response.data.token;
+
+        if (!this.clientToken) {
+          alert("Errore nel recupero del token di pagamento.");
+          return;
+        }
+
+        this.setupBraintree();
+      } catch (error) {
+        alert("Errore nel configurare il pagamento.");
+      }
+    },
+
+    setupBraintree() {
+      dropin.create(
+        {
+          authorization: this.clientToken,
+          container: "#dropin-container",
+        },
+        (err, instance) => {
+          if (err) {
+            console.error("Errore durante la creazione del Drop-in UI:", err);
+            return;
+          }
+          this.dropinInstance = instance;
+        }
+      );
+    },
+
+    async submitPayment() {
+        if (this.paymentLoading) return; // Evita più richieste contemporanee
+        this.paymentLoading = true;
+        this.paymentError = null;
+
+        this.dropinInstance.requestPaymentMethod(async (err, payload) => {
+            if (err) {
+                this.paymentError = "Errore nel metodo di pagamento.";
+                this.paymentLoading = false;
+                return;
+            }
+
+            try {
+                const response = await axios.post("http://localhost:8000/api/payment/checkout", {
+                    nonce: payload.nonce,
+                    cart: this.cart,
+                    customerName: this.customerName,
+                    customerSurname: this.customerSurname,
+                    shippingAddress: this.shippingAddress,
+                });
+
+                if (response.data.success) {
+                    alert("Pagamento completato con successo!");
+                    this.cartStore.clearCart();
+                    this.$router.push({ name: "Home" });
+                } else {
+                    this.paymentError = response.data.message || "Errore durante il pagamento.";
+                }
+            } catch (error) {
+                this.paymentError = "Errore di connessione con il server.";
+            } finally {
+                this.paymentLoading = false;
+            }
+        });
+    },
+
+    removeFromCart(dishId) {
+      this.cartStore.removeFromCart(dishId);
+    },
+  },
+};
+</script>
+
 <template>
   <div class="container-cart py-4">
+    <div v-if="restaurantId">
+      <router-link
+          :to="{ name: 'Menu', params: { restaurantId: restaurantId } }"
+          class="text_orange link-underline link-underline-opacity-0"
+        >
+          <i class="fa-solid fa-arrow-left"></i> Indietro
+        </router-link>
+    </div>
+    <div v-else>
+      <p>Ristorante non trovato</p>
+    </div>
     <h2 class="text_orange mb-3">Carrello</h2>
     <ul class="list-group mb-3">
       <li
@@ -62,170 +201,16 @@
         <div id="dropin-container" v-if="clientToken"></div>
         <!-- Solo se il clientToken è disponibile -->
 
-        <button type="submit" class="btn btn-success mt-3 w-100">
-          Paga {{ totalPrice }} €
+        <button type="submit" class="btn btn-success mt-3 w-100"
+          :disabled="paymentLoading || !customerName || !customerSurname || !shippingAddress"
+          @click.prevent="submitPayment">
+          <span v-if="paymentLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span v-else>Paga {{ totalPrice }} €</span>
         </button>
       </form>
     </div>
   </div>
 </template>
-
-<script>
-import dropin from "braintree-web-drop-in";
-import axios from "axios";
-
-export default {
-  data() {
-    return {
-      cart: [],
-      totalPrice: 0,
-      showPaymentForm: false,
-      customerName: "",
-      customerSurname: "",
-      shippingAddress: "",
-      dropinInstance: null,
-      clientToken: null,
-    };
-  },
-  methods: {
-    async togglePaymentForm() {
-      if (this.cart.length === 0) {
-        alert("Il carrello è vuoto!");
-        return;
-      }
-
-      this.showPaymentForm = true;
-
-      if (!this.clientToken) {
-        await this.getClientToken();
-      } else {
-        this.setupBraintree();
-      }
-    },
-
-    async getClientToken() {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/payment/token"
-        );
-        this.clientToken = response.data.token;
-
-        if (!this.clientToken) {
-          alert("Errore nel recupero del token di pagamento.");
-          return;
-        }
-
-        this.setupBraintree();
-      } catch (error) {
-        alert("Errore nel configurare il pagamento.");
-      }
-    },
-
-    setupBraintree() {
-      dropin.create(
-        {
-          authorization: this.clientToken,
-          container: "#dropin-container",
-        },
-        (err, instance) => {
-          if (err) {
-            console.error("Errore durante la creazione del Drop-in UI:", err);
-            return;
-          }
-          this.dropinInstance = instance;
-        }
-      );
-    },
-
-    async submitPayment() {
-      if (!this.dropinInstance) {
-        alert("Errore nel metodo di pagamento.");
-        return;
-      }
-
-      // Verifica che tutti i campi siano compilati
-      if (
-        !this.customerName ||
-        !this.customerSurname ||
-        !this.shippingAddress
-      ) {
-        alert("Tutti i dati sono obbligatori!");
-        return;
-      }
-
-      this.dropinInstance.requestPaymentMethod(async (err, payload) => {
-        if (err) {
-          alert("Errore nel metodo di pagamento.");
-          return;
-        }
-
-        const paymentData = {
-          nonce: payload.nonce,
-          amount: parseFloat(this.totalPrice) || 0, // Correzione per garantire che sia un numero
-          cart: this.cart,
-          customer_name: this.customerName,
-          customer_surname: this.customerSurname,
-          shipping_address: this.shippingAddress,
-          total_items: this.cart.length,
-        };
-
-        try {
-          const response = await axios.post(
-            "http://localhost:8000/api/payment/submit",
-            paymentData
-          );
-
-          if (response.data.success) {
-            alert("Pagamento completato con successo!");
-            // Salva l'ordine nel database
-            // await this.createOrder(response.data.orderId);
-
-            // Svuota il carrello
-            this.cart = [];
-            localStorage.removeItem("cart");
-            this.showPaymentForm = false;
-          } else {
-            alert(
-              `Errore nel completamento del pagamento: ${response.data.error}`
-            );
-          }
-        } catch (error) {
-          alert("Pagamento fallito.");
-        }
-      });
-    },
-
-    removeFromCart(dishId) {
-      const index = this.cart.findIndex((dish) => dish.id === dishId);
-      if (index > -1) {
-        if (this.cart[index].quantity > 1) {
-          this.cart[index].quantity -= 1;
-        } else {
-          this.cart.splice(index, 1);
-        }
-        this.calculateTotalPrice();
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-      }
-    },
-
-    calculateTotalPrice() {
-      this.totalPrice = this.cart.reduce(
-        (total, dish) => total + parseFloat(dish.price) * dish.quantity,
-        0
-      );
-
-      this.totalPrice = Math.round(this.totalPrice * 100) / 100;
-    },
-  },
-  mounted() {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      this.cart = JSON.parse(storedCart);
-      this.calculateTotalPrice();
-    }
-  },
-};
-</script>
 
 <style lang="scss" scoped>
 .text_orange {

@@ -51,6 +51,13 @@ export default {
     addToCart(dish) {
       this.cartStore.addToCart(dish); // Chiama il metodo dello store
     },
+    cancelClearCart() {
+      this.cartStore.cancelClearCart();
+    },
+    confirmAddToCart() {
+      // Logica di conferma
+      this.cartStore.confirmAddToCart();
+    },
   },
 
   mounted() {
@@ -117,7 +124,7 @@ export default {
                   <p class="fst-italic">{{ restaurantAddress }}</p>
                 </p>
                 <p class="m-0">
-                  <p class="mb-1">Vuoi Chiedere informazioni? <i class="fa-solid fa-arrow-down"></i></p>
+                  <p class="mb-1">Vuoi chiedere informazioni? <i class="fa-solid fa-arrow-down"></i></p>
                   <span>Chiama qui: </span><a class="text-decoration-none text_orange fst-italic icon-link" href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
                 </p>
               </div>
@@ -151,10 +158,10 @@ export default {
         <div class="mt-4 text-center">
           <router-link
             v-if="cartStore.cart.length > 0"
-            :to="{ name: 'Cart' }"
+            :to="{ name: 'Cart', params: { restaurantId: restaurantId} }"
             class="btn btn_orange border"
           >
-            Vai al carrello ({{ cartStore.cart.length }} piatti)
+            Vai al carrello ({{ cartStore.cartLength }} piatti)
           </router-link>
         </div>
       </div>
@@ -162,9 +169,9 @@ export default {
 
     <!-- Modale per confermare l'aggiunta di un piatto da un ristorante diverso -->
     <div
-      v-if="showModal"
+      v-if="cartStore.showModal"
       class="modal fade show"
-      style="display: block; background-color: rgba(0, 0, 0, 0.5)"
+      style="display: block; background-color: rgba(0, 0, 0, 0.5);"
       tabindex="-1"
       role="dialog"
     >
