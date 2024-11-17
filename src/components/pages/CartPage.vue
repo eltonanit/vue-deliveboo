@@ -2,8 +2,13 @@
   <div class="container-cart py-4">
     <h2 class="text_orange mb-3">Carrello</h2>
     <ul class="list-group mb-3">
-      <li v-for="dish in cart" :key="dish.id" class="list-group-item d-flex justify-content-between overflow-y">
-        <span>{{ dish.name }} (x{{ dish.quantity }})</span> <!-- Mostra la quantità -->
+      <li
+        v-for="dish in cart"
+        :key="dish.id"
+        class="list-group-item d-flex justify-content-between overflow-y"
+      >
+        <span>{{ dish.name }} (x{{ dish.quantity }})</span>
+        <!-- Mostra la quantità -->
         <span>{{ dish.price }} €</span>
         <button class="btn btn-danger btn-sm" @click="removeFromCart(dish.id)">
           <i class="fas fa-trash"></i>
@@ -20,10 +25,47 @@
 
     <div v-if="showPaymentForm" class="payment-form mt-3">
       <h3>Paga ora</h3>
-      <div id="dropin-container"></div>
-      <button class="btn btn-success mt-3 w-100" @click="submitPayment">
-        Paga {{ totalPrice }} €
-      </button>
+      <form @submit.prevent="submitPayment">
+        <div class="form-group mb-3">
+          <label for="customerName">Nome</label>
+          <input
+            type="text"
+            id="customerName"
+            v-model="customerName"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="customerSurname">Cognome</label>
+          <input
+            type="text"
+            id="customerSurname"
+            v-model="customerSurname"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="shippingAddress">Indirizzo di spedizione</label>
+          <input
+            type="text"
+            id="shippingAddress"
+            v-model="shippingAddress"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div id="dropin-container" v-if="clientToken"></div>
+        <!-- Solo se il clientToken è disponibile -->
+
+        <button type="submit" class="btn btn-success mt-3 w-100">
+          Paga {{ totalPrice }} €
+        </button>
+      </form>
     </div>
   </div>
 </template>
@@ -38,6 +80,9 @@ export default {
       cart: [],
       totalPrice: 0,
       showPaymentForm: false,
+      customerName: "",
+      customerSurname: "",
+      shippingAddress: "",
       dropinInstance: null,
       clientToken: null,
     };
@@ -60,7 +105,9 @@ export default {
 
     async getClientToken() {
       try {
-        const response = await axios.get("http://localhost:8000/api/payment/token");
+        const response = await axios.get(
+          "http://localhost:8000/api/payment/token"
+        );
         this.clientToken = response.data.token;
 
         if (!this.clientToken) {
@@ -96,11 +143,12 @@ export default {
         return;
       }
 
-      const customerName = prompt("Inserisci il tuo nome:");
-      const customerSurname = prompt("Inserisci il tuo cognome:");
-      const shippingAddress = prompt("Inserisci il tuo indirizzo di spedizione:");
-
-      if (!customerName || !customerSurname || !shippingAddress) {
+      // Verifica che tutti i campi siano compilati
+      if (
+        !this.customerName ||
+        !this.customerSurname ||
+        !this.shippingAddress
+      ) {
         alert("Tutti i dati sono obbligatori!");
         return;
       }
@@ -113,16 +161,19 @@ export default {
 
         const paymentData = {
           nonce: payload.nonce,
-          amount: parseFloat(this.totalPrice) || 0,  // Correzione per garantire che sia un numero
+          amount: parseFloat(this.totalPrice) || 0, // Correzione per garantire che sia un numero
           cart: this.cart,
-          customer_name: customerName,
-          customer_surname: customerSurname,
-          shipping_address: shippingAddress,
+          customer_name: this.customerName,
+          customer_surname: this.customerSurname,
+          shipping_address: this.shippingAddress,
           total_items: this.cart.length,
         };
 
         try {
-          const response = await axios.post("http://localhost:8000/api/payment/submit", paymentData);
+          const response = await axios.post(
+            "http://localhost:8000/api/payment/submit",
+            paymentData
+          );
 
           if (response.data.success) {
             alert("Pagamento completato con successo!");
@@ -130,7 +181,9 @@ export default {
             localStorage.removeItem("cart");
             this.showPaymentForm = false;
           } else {
-            alert(`Errore nel completamento del pagamento: ${response.data.error}`);
+            alert(
+              `Errore nel completamento del pagamento: ${response.data.error}`
+            );
           }
         } catch (error) {
           alert("Pagamento fallito.");
@@ -152,15 +205,13 @@ export default {
     },
 
     calculateTotalPrice() {
-      // Calcoliamo il totale come numero flottante
       this.totalPrice = this.cart.reduce(
         (total, dish) => total + parseFloat(dish.price) * dish.quantity,
         0
       );
 
-      // Arrotondiamo a due decimali, ma lasciamo il valore come numero
       this.totalPrice = Math.round(this.totalPrice * 100) / 100;
-    }
+    },
   },
   mounted() {
     const storedCart = localStorage.getItem("cart");
