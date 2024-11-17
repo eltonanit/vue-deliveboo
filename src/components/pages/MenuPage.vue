@@ -10,8 +10,10 @@ export default {
       dishes: [], // Array per memorizzare i dati dei piatti
       loading: false,
       error: null,
-      cart: [],
-      ristoranteAttuale: null,
+      cart: [], // Carrello
+      ristoranteAttuale: null, // Ristorante attuale
+      showModal: false, // Flag per la modale
+      dishToAdd: null, // Piatto da aggiungere
     };
   },
   methods: {
@@ -20,13 +22,13 @@ export default {
       this.loading = true;
       this.error = null;
 
-      axios.get(`${this.store.baseUrl}/dishes?restaurant_id=${this.restaurantId}`)
+      axios
+        .get(`${this.store.baseUrl}/dishes?restaurant_id=${this.restaurantId}`)
         .then((response) => {
           if (response.data.success) {
-            // Assicurati che il prezzo di ogni piatto sia un numero
-            this.dishes = response.data.data.map(dish => ({
+            this.dishes = response.data.data.map((dish) => ({
               ...dish,
-              price: parseFloat(dish.price) // Converte il prezzo in numero
+              price: parseFloat(dish.price), // Converte il prezzo in numero
             }));
           } else {
             this.error = "Errore nel recupero dei piatti.";
@@ -43,37 +45,52 @@ export default {
 
     // Aggiunta piatto al carrello con gestione della quantità
     addToCart(dish) {
-      const existingDish = this.cart.find(item => item.id === dish.id);
+      // Se il ristorante del piatto è diverso dal ristorante attuale, mostra la modale
+      if (
+        this.cart.length > 0 &&
+        this.cart[0].restaurant.id !== dish.restaurant.id
+      ) {
+        this.dishToAdd = dish;
+        this.showModal = true; // Mostra la modale
+      } else {
+        // Se il ristorante è lo stesso, aggiungi normalmente il piatto
+        this.addDishToCart(dish);
+      }
+    },
+
+    // Aggiungi piatto al carrello
+    addDishToCart(dish) {
+      const existingDish = this.cart.find((item) => item.id === dish.id);
 
       if (existingDish) {
-        existingDish.quantity += 1; // Incrementa la quantità
+        existingDish.quantity += 1;
       } else {
-        // Aggiunge il piatto al carrello con il prezzo convertito in numero
         this.cart.push({
           ...dish,
-          price: parseFloat(dish.price), // Converte il prezzo in numero
-          quantity: 1
+          price: parseFloat(dish.price),
+          quantity: 1,
         });
       }
       this.saveCartToLocalStorage();
     },
 
-    // Verifica se si può aggiungere il piatto al carrello
-    canAddToCart(dish) {
-      return this.cart.length === 0 || this.cart[0]?.restaurant?.id === dish.restaurant.id;
+    // Annulla l'aggiunta del piatto e chiude la modale
+    cancelClearCart() {
+      this.showModal = false;
+      this.dishToAdd = null;
     },
 
-    // Rimozione piatto dal carrello (con gestione della quantità)
-    removeFromCart(dishId) {
-      const index = this.cart.findIndex((dish) => dish.id === dishId);
-      if (index !== -1) {
-        if (this.cart[index].quantity > 1) {
-          this.cart[index].quantity -= 1; // Decrementa la quantità
-        } else {
-          this.cart.splice(index, 1); // Rimuove il piatto se la quantità è 1
-        }
-        this.saveCartToLocalStorage();
+    // Conferma l'aggiunta del piatto e chiude la modale
+    confirmAddToCart() {
+      // Svuota il carrello prima di aggiungere piatti dal nuovo ristorante
+      this.cart = [];
+
+      if (this.dishToAdd) {
+        this.addDishToCart(this.dishToAdd);
       }
+
+      this.showModal = false;
+      this.dishToAdd = null;
     },
 
     // Salvataggio del carrello nel localStorage
@@ -118,41 +135,55 @@ export default {
     // Calcolo del prezzo totale
     totalPrice() {
       return this.cart
-        .reduce((total, dish) => total + parseFloat(dish.price || 0) * dish.quantity, 0)
+        .reduce(
+          (total, dish) => total + parseFloat(dish.price || 0) * dish.quantity,
+          0
+        )
         .toFixed(2); // Formattato con due decimali
     },
 
     // Calcolo del numero totale di piatti nel carrello
     totalQuantity() {
       return this.cart.reduce((total, dish) => total + dish.quantity, 0);
-    }
+    },
   },
 };
 </script>
-
 
 <template>
   <div class="container py-4">
     <div class="row">
       <!-- Informazioni Ristorante -->
       <div class="col-12 mb-5">
-        <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0">
+        <router-link
+          :to="{ name: 'Home' }"
+          class="text_orange link-underline link-underline-opacity-0"
+        >
           <i class="fa-solid fa-arrow-left"></i> Indietro
         </router-link>
         <div class="card border-0 bg-transparent mb-3 mt-3">
           <div class="row g-0 align-items-center">
             <div class="col-md-4">
-              <img src="https://picsum.photos/420/250" class="img-fluid rounded" alt="Restaurant image" />
+              <img
+                src="https://picsum.photos/420/250"
+                class="img-fluid rounded"
+                alt="Restaurant image"
+              />
             </div>
             <div class="col-md-8 text-white text-capitalize">
               <div class="card-body">
                 <h5 class="card-title text_orange">{{ restaurantName }}</h5>
                 <ul class="list-unstyled">
-                  <li v-for="type in restaurantTypes" :key="type.id">{{ type.name }}</li>
+                  <li v-for="type in restaurantTypes" :key="type.id">
+                    {{ type.name }}
+                  </li>
                 </ul>
-                <p class="m-0">Indirizzo: <span>{{ restaurantAddress }}</span></p>
                 <p class="m-0">
-                  Numero: <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
+                  Indirizzo: <span>{{ restaurantAddress }}</span>
+                </p>
+                <p class="m-0">
+                  Numero:
+                  <a href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
                 </p>
               </div>
             </div>
@@ -173,7 +204,10 @@ export default {
                 <h5 class="card-title">{{ dish.name }}</h5>
                 <p class="card-text flex-grow-1">{{ dish.description }}</p>
                 <p class="text-success">{{ dish.price }} &#8364;</p>
-                <button class="btn btn_orange mt-2 w-100" @click.prevent="addToCart(dish)">
+                <button
+                  class="btn btn_orange mt-2 w-100"
+                  @click.prevent="addToCart(dish)"
+                >
                   <i class="fa-solid fa-plus"></i> Aggiungi al carrello
                 </button>
               </div>
@@ -183,9 +217,52 @@ export default {
 
         <!-- Pulsante per andare al carrello -->
         <div class="mt-4 text-center">
-          <router-link v-if="cart.length > 0" :to="{ name: 'Cart' }" class="btn btn_orange">
+          <router-link
+            v-if="cart.length > 0"
+            :to="{ name: 'Cart' }"
+            class="btn btn_orange"
+          >
             Vai al carrello ({{ totalQuantity }} piatti)
           </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale per confermare l'aggiunta di un piatto da un ristorante diverso -->
+    <div
+      v-if="showModal"
+      class="modal fade show"
+      style="display: block; background-color: rgba(0, 0, 0, 0.5)"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Carrello</h5>
+          </div>
+          <div class="modal-body">
+            <p>
+              Stai per aggiungere un piatto da un altro ristorante. Vuoi
+              svuotare il carrello e aggiungere questo piatto?
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="cancelClearCart"
+            >
+              Annulla
+            </button>
+            <button
+              type="button"
+              class="btn btn_orange"
+              @click="confirmAddToCart"
+            >
+              Conferma
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -203,5 +280,14 @@ export default {
   &:hover {
     background: rgb(77, 20, 140);
   }
+}
+
+.modal-dialog-centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 450px;
+  width: 100%;
 }
 </style>
