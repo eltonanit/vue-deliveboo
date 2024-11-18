@@ -158,7 +158,7 @@ export default {
         <div class="mt-4 text-center">
           <router-link
             v-if="cartStore.cart.length > 0"
-            :to="{ name: 'Cart', params: { restaurantId: restaurantId} }"
+            :to="{ name: 'Cart' }"
             class="btn btn_orange border"
           >
             Vai al carrello ({{ cartStore.cartLength }} piatti)

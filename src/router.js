@@ -21,7 +21,6 @@ const routes = [
     path: "/cart",
     name: "Cart",
     component: CartPage,
-    props: true, // Per passare l'ID del ristorante come prop
   },
 ];
 
