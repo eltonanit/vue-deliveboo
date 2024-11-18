@@ -118,7 +118,7 @@ export default {
               class="text-decoration-none w-100">
 
               <div class="card rounded-0 p-1 card-custom shadow-sm">
-                <img :src = "restaurant.image" :alt="restaurant.name"
+                <img :src="restaurant.image == null ? '/assets/img/test-ristorante.jpg' : restaurant.image" :alt="restaurant.name"
                   class="card-img-top img-fluid" />
                 <div class="card-body border border-dark rounded mt-1 px-1 py-2">
                   <h6 class="card-title mb-1">{{ restaurant.name }}</h6>
