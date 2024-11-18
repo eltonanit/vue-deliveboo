@@ -68,6 +68,9 @@ export default {
     restaurantName() {
       return this.dishes[0]?.restaurant?.name || "Ristorante";
     },
+    restaurantImage() {
+      return this.dishes[0]?.restaurant?.image || "Ristorante-immagine";
+    },
     restaurantTypes() {
       return this.dishes[0]?.restaurant?.types || "Tipologie non disponibili";
     },
@@ -96,20 +99,14 @@ export default {
     <div class="row">
       <!-- Informazioni Ristorante -->
       <div class="col-12 mb-5">
-        <router-link
-          :to="{ name: 'Home' }"
-          class="text_orange link-underline link-underline-opacity-0"
-        >
+        <router-link :to="{ name: 'Home' }" class="text_orange link-underline link-underline-opacity-0">
           <i class="fa-solid fa-arrow-left"></i> Indietro
         </router-link>
         <div class="card border-0 bg-transparent mb-3 mt-3">
           <div class="row g-0 ">
             <div class="col-md-4">
-              <img
-                src="https://picsum.photos/420/250"
-                class="img-fluid rounded"
-                alt="Restaurant image"
-              />
+
+              <img :src="restaurantImage" class="img-fluid rounded" alt="Restaurant image" @error="handleImageError" />
             </div>
             <div class="col-md-8 text-white d-flex flex-column justify-content-evenly">
               <div>
@@ -120,12 +117,13 @@ export default {
               </div>
               <div>
                 <p class="m-0">
-                  <p class="m-0">Ci trovi in:</p> 
-                  <p class="fst-italic">{{ restaurantAddress }}</p>
+                <p class="m-0">Ci trovi in:</p>
+                <p class="fst-italic">{{ restaurantAddress }}</p>
                 </p>
                 <p class="m-0">
-                  <p class="mb-1">Vuoi chiedere informazioni? <i class="fa-solid fa-arrow-down"></i></p>
-                  <span>Chiama qui: </span><a class="text-decoration-none text_orange fst-italic icon-link" href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
+                <p class="mb-1">Vuoi chiedere informazioni? <i class="fa-solid fa-arrow-down"></i></p>
+                <span>Chiama qui: </span><a class="text-decoration-none text_orange fst-italic icon-link"
+                  href="tel:{{ restaurantPhone }}">{{ restaurantPhone }}</a>
                 </p>
               </div>
             </div>
@@ -156,11 +154,8 @@ export default {
 
         <!-- Pulsante per andare al carrello -->
         <div class="mt-4 text-center">
-          <router-link
-            v-if="cartStore.cart.length > 0"
-            :to="{ name: 'Cart', params: { restaurantId: restaurantId} }"
-            class="btn btn_orange border"
-          >
+          <router-link v-if="cartStore.cart.length > 0" :to="{ name: 'Cart', params: { restaurantId: restaurantId} }"
+            class="btn btn_orange border">
             Vai al carrello ({{ cartStore.cartLength }} piatti)
           </router-link>
         </div>
@@ -168,13 +163,8 @@ export default {
     </div>
 
     <!-- Modale per confermare l'aggiunta di un piatto da un ristorante diverso -->
-    <div
-      v-if="cartStore.showModal"
-      class="modal fade show"
-      style="display: block; background-color: rgba(0, 0, 0, 0.5);"
-      tabindex="-1"
-      role="dialog"
-    >
+    <div v-if="cartStore.showModal" class="modal fade show"
+      style="display: block; background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
       <div class="modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -187,18 +177,10 @@ export default {
             </p>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click="cancelClearCart"
-            >
+            <button type="button" class="btn btn-secondary" @click="cancelClearCart">
               Annulla
             </button>
-            <button
-              type="button"
-              class="btn btn_orange"
-              @click="confirmAddToCart"
-            >
+            <button type="button" class="btn btn_orange" @click="confirmAddToCart">
               Conferma
             </button>
           </div>
