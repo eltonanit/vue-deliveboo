@@ -63,67 +63,68 @@ export default {
     <div class="row py-5">
       <div class="filters-fixed col-12 mb-5 col-lg-3 text-white">
         <h5 class="mb-3">Filtra Ristoranti</h5>
-          <div class="input-group mb-4">
-            <input class="form-control" type="text" v-model="searchTerm" placeholder="Nome ristorante">
-            <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
-          </div>
+        <div class="input-group mb-4">
+          <input class="form-control" type="text" v-model="searchTerm" placeholder="Nome ristorante">
+          <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></span>
+        </div>
 
-          <!-- div mobile -->
-          <div id="my_types_container" class="d-flex justify-content-between d-md-none" @click="visibleTypes()">
-            <h6>Tipologia</h6>
-            <i class="fa-solid" :class="types_visible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </div>
-          <!-- div tablet in su -->
-          <div class="d-flex justify-content-between d-none d-md-block">
-            <h6>Tipologia</h6>
-          </div>
+        <!-- div mobile -->
+        <div id="my_types_container" class="d-flex justify-content-between d-md-none" @click="visibleTypes()">
+          <h6>Tipologia</h6>
+          <i class="fa-solid" :class="types_visible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </div>
+        <!-- div tablet in su -->
+        <div class="d-flex justify-content-between d-none d-md-block">
+          <h6>Tipologia</h6>
+        </div>
 
-          <!-- Filtro con icone mobile -->
-          <div class="d-flex flex-wrap d-md-none" :class="[{'d-block': types_visible}, {'d-none': !types_visible}]">
-            <div class="d-flex align-items-center rounded_15 m-0 mb-2 p-1 me-1" v-for="type in types" :key="type" :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)" :style="{ color: getIconColor(type) }">
-              <i class="me-1" :class="getIconClass(type)"></i>
-              <p class="text-white m-0">{{ type }}</p>
-              <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }" >Check</p>
-            </div>
+        <!-- Filtro con icone mobile -->
+        <div class="d-flex flex-wrap d-md-none" :class="[{'d-block': types_visible}, {'d-none': !types_visible}]">
+          <div class="d-flex align-items-center rounded_15 m-0 mb-2 p-1 me-1" v-for="type in types" :key="type"
+            :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)"
+            :style="{ color: getIconColor(type) }">
+            <i class="me-1" :class="getIconClass(type)"></i>
+            <p class="text-white m-0">{{ type }}</p>
+            <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }">Check</p>
           </div>
+        </div>
 
-          <!-- Filtro con icone desktop in su-->
-          <div class="d-none d-md-flex flex-wrap">
-            <div class="d-flex align-items-center rounded_15 m-0 mb-2 p-1 me-1" v-for="type in types" :key="type" :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)" :style="{ color: getIconColor(type) }">
-              <i class="me-1" :class="getIconClass(type)"></i>
-              <p class="text-white m-0">{{ type }}</p>
-              <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }" >Check</p>
-            </div>
+        <!-- Filtro con icone desktop in su-->
+        <div class="d-none d-md-flex flex-wrap">
+          <div class="d-flex align-items-center rounded_15 m-0 mb-2 p-1 me-1" v-for="type in types" :key="type"
+            :class="['icon-container', { active: selectedTypes.includes(type)}]" @click="toggleType(type)"
+            :style="{ color: getIconColor(type) }">
+            <i class="me-1" :class="getIconClass(type)"></i>
+            <p class="text-white m-0">{{ type }}</p>
+            <p class="text-secondary m-0 d-none" :class="{ 'd-block' : selectedTypes.includes(type) }">Check</p>
           </div>
-          
+        </div>
+
       </div>
       <div class="col-12 col-lg-9">
         <!-- Lista dei ristoranti -->
         <div class="row">
           <h3 v-if="loading" class="text-center text_orange">Caricamento...</h3>
           <h3 v-if="error" class="text-center text_orange">{{ error }}</h3>
-          
+
           <div v-if="selectedTypes.length > 0">
             <h5 class="text-white fst-italic">Risultato della Ricerca</h5>
             <p class="text-white">{{ filteredRestaurants.length }} ristoranti</p>
           </div>
-          
-          <div v-if="!loading & !error" v-for="restaurant in filteredRestaurants" :key="restaurant.id" 
-          class="col-12 col-sm-6 col-md-4 col-xl-3 mb-4 d-flex justify-content-center">
-            <router-link :to="{ name: 'Menu', params: { restaurantId: restaurant.id} }" class="text-decoration-none w-100">
-              
+
+          <div v-if="!loading & !error" v-for="restaurant in filteredRestaurants" :key="restaurant.id"
+            class="col-12 col-sm-6 col-md-4 col-xl-3 mb-4 d-flex justify-content-center">
+            <router-link :to="{ name: 'Menu', params: { restaurantId: restaurant.id} }"
+              class="text-decoration-none w-100">
+
               <div class="card rounded-0 p-1 card-custom shadow-sm">
-                <img src="https://picsum.photos/450/450" alt="Restaurant image" class="card-img-top img-fluid"/>
+                <img :src = "restaurant.image" :alt="restaurant.name"
+                  class="card-img-top img-fluid" />
                 <div class="card-body border border-dark rounded mt-1 px-1 py-2">
                   <h6 class="card-title mb-1">{{ restaurant.name }}</h6>
                   <p class="card-text mb-1 gap-2">
-                    <span 
-                      v-for="type in restaurant.types" 
-                      :key="type.id"
-                      :class="getIconClass(type.name)" 
-                      :style="{ color: getIconColor(type.name) }"
-                      aria-hidden="true"
-                      class="me-2">
+                    <span v-for="type in restaurant.types" :key="type.id" :class="getIconClass(type.name)"
+                      :style="{ color: getIconColor(type.name) }" aria-hidden="true" class="me-2">
                     </span>
                   </p>
                   <p class="card-text fs-10 m-0">{{ restaurant.address }}</p>
