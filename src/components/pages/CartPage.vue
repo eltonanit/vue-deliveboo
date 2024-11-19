@@ -121,6 +121,7 @@ export default {
             this.cartStore.cart = [];
             localStorage.removeItem("cart");
             this.showPaymentForm = false;
+            this.$router.push('/')
           } else {
             alert(`Errore nel completamento del pagamento: ${response.data.error}`);
           }
@@ -139,23 +140,9 @@ export default {
 
 <template>
   <div class="container py-5">
-    <div class="row">
-      <!-- <div class="col-12 py-2">
-        <div v-if="restaurantId">
-          <router-link
-              :to="{ name: 'Menu', params: { restaurantId: restaurantId } }"
-              class="text_orange link-underline link-underline-opacity-0"
-            >
-              <i class="fa-solid fa-arrow-left"></i> Indietro
-            </router-link>
-        </div>
-        <div v-else>
-          <p>Ristorante non trovato</p>
-        </div>
-      </div> -->
-
-      <div class="col-12 py-3">
-        <h2 class="text_orange mb-3">Carrello</h2>
+    <div class="row position-relative align-items-center">
+      <div class="col-12 col-md-6 py-4 px-5">
+        <h2 class="text_orange mb-4">Carrello</h2>
         <ul class="list-group mb-3">
           <li
             v-for="dish in cart"
@@ -177,12 +164,14 @@ export default {
           <span class="text-white">Totale:</span>
           <span class="text-white">{{ totalPrice }} €</span>
         </div>
-        <button class="btn btn_orange mt-3 w-100" @click="togglePaymentForm">
+        <button class="btn btn_orange border mt-4 w-100" @click="togglePaymentForm">
           Procedi al pagamento
         </button>
       </div>
 
-      <div class="col-12 py-2">
+      <i class="fa-solid fa-arrow-right arrow-absolute"></i>
+
+      <div class="col-12 col-md-6 py-4 px-5">
         <div v-if="showPaymentForm" class="payment-form mt-3">
           <h3>Paga ora</h3>
           <form @submit.prevent="submitPayment">
@@ -248,6 +237,15 @@ export default {
   &:hover {
     background-color: rgb(77, 20, 140);
   }
+}
+
+.arrow-absolute {
+  position: absolute;
+  top: 50%;
+  left: 620px;
+  font-size: 30px;
+  color: white;
+  width: 10%;
 }
 
 .payment-form {

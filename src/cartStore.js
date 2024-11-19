@@ -64,6 +64,11 @@ export const useCartStore = defineStore('cart', {
 
         this.saveCartToLocalStorage();
       },
+
+      deleteFromCart(dishId) {
+        this.cart = this.cart.filter((dish) => dish.id !== dishId);
+        this.saveCartToLocalStorage(); // Mantieni aggiornato il localStorage
+      },
   
       // Salva il carrello nel localStorage
       saveCartToLocalStorage() {

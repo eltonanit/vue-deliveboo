@@ -73,6 +73,7 @@ export default {
           <h6>Tipologia</h6>
           <i class="fa-solid" :class="types_visible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
         </div>
+        
         <!-- div tablet in su -->
         <div class="d-flex justify-content-between d-none d-md-block">
           <h6>Tipologia</h6>
